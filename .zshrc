@@ -170,7 +170,7 @@ bindkey '^S' history-incremental-pattern-search-forward
 ########################################
 alias l='ls -CF'
 alias la='ls -CFGA'
-alias ll='ls -alCFh'
+alias ll='ls -CalFh'
 
 alias cp='cp -i'
 alias mv='mv -i'

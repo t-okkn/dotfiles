@@ -1,14 +1,15 @@
 set nu
 syntax on
 set syntax=mel
+set fileformats=unix,dos,mac
 set encoding=utf-8
 set fileencodings=utf-8
 autocmd FileType * setlocal formatoptions-=ro
 
 "タブ、空白、改行の可視化
 set list
-set listchars=tab:>-,extends:>,precedes:<,nbsp:%,eol:￢
-"半角空白は上記に[,trail:.]を追加
+set listchars=tab:>-,trail:-,extends:>,precedes:<,nbsp:%
+"改行も可視化する場合、行末に「,eol:$」を挿入
 
 "全角スペースをハイライト表示
 function! ZenkakuSpace()
