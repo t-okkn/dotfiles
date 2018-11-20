@@ -26,17 +26,7 @@ zstyle ':zle:*' word-style unspecified
 # 色設定
 ########################################
 # zshの色コマンドを使用出来るようにする
-autoload -Uz colors
-colors
-
-# プロンプト
-# 1行表示
-# PROMPT="
-# %{${fg_bold[blue]}%}%n%# %{${reset_color}%}"
-# 2行表示
-PROMPT="
-[%{${fg_bold[blue]}%}%n%{$reset_color%}@%m] %{$fg[cyan]%}%~
-%{${reset_color}%}%# "
+autoload -Uz colors && colors
 
 # lsの色設定
 export LS_COLORS='di=36:ln=1;31:so=35:pi=33:ex=32:or=30;41:mi=1;31;47:bd=1;31;44:cd=1;33;44:su=30;42:sg=34;42:tw=31;42:ow=1;36;40:st=1;36;41'
@@ -53,8 +43,7 @@ alias fgrep='fgrep --color=auto'
 # 補完
 ########################################
 # 補完機能を有効にする
-autoload -Uz compinit
-compinit
+autoload -Uz compinit && compinit
 
 # zshの補完にもLS_COLORSと同様の色を設定する
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
@@ -77,17 +66,45 @@ zstyle ':completion:*:default' menu select=1
 
 
 ########################################
-# vcs_info
+# プロンプト系の設定
 ########################################
-autoload -Uz vcs_info
 autoload -Uz add-zsh-hook
+autoload -Uz vcs_info
 
-zstyle ':vcs_info:*' formats '%F{green}(%s)-[%b]%f'
-zstyle ':vcs_info:*' actionformats '%F{red}(%s)-[%b|%a]%f'
+# promptinitでの設定の場合
+# autoload -Uz promptinit && promptinit
+# prompt adam1 とか
+
+# 変数の設定
+local p_color="%(?.%{${fg[cyan]}%}.%{${fg[magenta]}%})"
+
+if [ $(id | sed -r 's/uid=([0-9]+)\(.*/\1/') -eq 1 ]; then
+  local userColor="red"
+else
+  local userColor="blue"
+fi
+
+# 右側のプロンプト
+# 1行表示
+# PROMPT="
+# %{${fg_bold[${userColor}]}%}%n%# %{${reset_color}%}"
+# 2行表示
+PROMPT="
+[%{${fg_bold[${userColor}]}%}%n%{$reset_color%}@%m] %{$fg[cyan]%}%~
+%{${reset_color}%}%# "
+
+# 左側のプロンプト
+RPROMPT="${p_color} return:[%?]%{${reset_color}%}"
+
+zstyle ':vcs_info:git:*' check-for-changes true
+zstyle ':vcs_info:git:*' stagedstr "%F{yellow}!"
+zstyle ':vcs_info:git:*' unstagedstr "%F{red}+"
+zstyle ':vcs_info:*' formats "%F{green}[%b]%c%u%f"
+zstyle ':vcs_info:*' actionformats '%F{red}[%b|%a]%f'
 
 function _update_vcs_info_msg() {
   LANG=en_US.UTF-8 vcs_info
-  RPROMPT="${vcs_info_msg_0_}"
+  RPROMPT="${vcs_info_msg_0_}${p_color} return:[%?]%{${reset_color}%}"
 }
 
 add-zsh-hook precmd _update_vcs_info_msg
@@ -155,6 +172,11 @@ setopt auto_menu
 
 # 高機能なワイルドカード展開を使用する
 setopt extended_glob
+
+# Googleカラーでサジェスト #
+setopt correct
+SPROMPT="( ´・ω・) ＜ %{$fg[blue]%}も%{${reset_color}%}%{$fg[red]%}し%{${reset_color}%}%{$fg[yellow]%}か%{${reset_color}%}%{$fg[green]%}し%{${reset_color}%}%{$fg[red]%}て%{${reset_color}%}: %{$fg[red]%}%r%{${reset_color}%}？ [(y)es,(n)o,(a)bort,(e)dit]
+-> "
 
 
 ########################################
