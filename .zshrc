@@ -169,8 +169,8 @@ bindkey '^S' history-incremental-pattern-search-forward
 # エイリアス
 ########################################
 alias l='ls -CF'
-alias la='ls -CFGA'
-alias ll='ls -CalFh'
+alias la='ls -CFA'
+alias ll='ls -alFh'
 
 alias cp='cp -i'
 alias mv='mv -i'
