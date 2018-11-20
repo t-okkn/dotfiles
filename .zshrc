@@ -78,13 +78,13 @@ autoload -Uz vcs_info
 # 変数の設定
 local p_color="%(?.%{${fg[cyan]}%}.%{${fg[magenta]}%})"
 
-if [ $(id | sed -r 's/uid=([0-9]+)\(.*/\1/') -eq 1 ]; then
+if [ $(id | sed -r 's/uid=([0-9]+)\(.*/\1/') -eq 0 ]; then
   local userColor="red"
 else
   local userColor="blue"
 fi
 
-# 右側のプロンプト
+# 左側のプロンプト
 # 1行表示
 # PROMPT="
 # %{${fg_bold[${userColor}]}%}%n%# %{${reset_color}%}"
@@ -93,7 +93,7 @@ PROMPT="
 [%{${fg_bold[${userColor}]}%}%n%{$reset_color%}@%m] %{$fg[cyan]%}%~
 %{${reset_color}%}%# "
 
-# 左側のプロンプト
+# 右側のプロンプト
 RPROMPT="${p_color} return:[%?]%{${reset_color}%}"
 
 zstyle ':vcs_info:git:*' check-for-changes true
