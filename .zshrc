@@ -37,6 +37,7 @@ export GREP_COLOR="1;35"
 alias grep='grep --color=auto'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
+alias zgrep='zgrep --color=auto'
 
 
 ########################################
@@ -44,6 +45,9 @@ alias fgrep='fgrep --color=auto'
 ########################################
 # 補完機能を有効にする
 autoload -Uz compinit && compinit
+
+# 予測変換機能を有効にする
+autoload -Uz predict-on && predict-on
 
 # zshの補完にもLS_COLORSと同様の色を設定する
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
@@ -55,8 +59,7 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' ignore-parents parent pwd ..
 
 # sudo の後ろでコマンド名を補完する
-zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin \
-/usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
+zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
 
 # ps コマンドのプロセス名補完
 zstyle ':completion:*:processes' command 'ps x -o pid,s,args'
@@ -76,8 +79,10 @@ autoload -Uz vcs_info
 # prompt adam1 とか
 
 # 変数の設定
+# 直前に実行したコマンドの戻り値が { 0 -> cyan; 0以外 -> magenta }
 local p_color="%(?.%{${fg[cyan]}%}.%{${fg[magenta]}%})"
 
+# rootはred、それ以外はblue
 if [ $(id | sed -r 's/uid=([0-9]+)\(.*/\1/') -eq 0 ]; then
   local userColor="red"
 else
@@ -96,12 +101,15 @@ PROMPT="
 # 右側のプロンプト
 RPROMPT="${p_color} return:[%?]%{${reset_color}%}"
 
+# git用のvcs_info
+# 【参照】https://qiita.com/umasoya/items/f3bd6cffd418f3830b75
 zstyle ':vcs_info:git:*' check-for-changes true
 zstyle ':vcs_info:git:*' stagedstr "%F{yellow}!"
 zstyle ':vcs_info:git:*' unstagedstr "%F{red}+"
 zstyle ':vcs_info:*' formats "%F{green}[%b]%c%u%f"
 zstyle ':vcs_info:*' actionformats '%F{red}[%b|%a]%f'
 
+# hook用関数
 function _update_vcs_info_msg() {
   LANG=en_US.UTF-8 vcs_info
   RPROMPT="${vcs_info_msg_0_}${p_color} return:[%?]%{${reset_color}%}"
@@ -126,7 +134,7 @@ setopt hist_ignore_space
 setopt hist_verify
 
 # 余分な空白は詰めて記録
-setopt hist_reduce_blanks  
+setopt hist_reduce_blanks
 
 # historyコマンドは履歴に登録しない
 setopt hist_no_store
@@ -173,7 +181,7 @@ setopt auto_menu
 # 高機能なワイルドカード展開を使用する
 setopt extended_glob
 
-# Googleカラーでサジェスト #
+# Googleカラーでサジェスト
 setopt correct
 SPROMPT="( ´・ω・) ＜ %{$fg[blue]%}も%{${reset_color}%}%{$fg[red]%}し%{${reset_color}%}%{$fg[yellow]%}か%{${reset_color}%}%{$fg[green]%}し%{${reset_color}%}%{$fg[red]%}て%{${reset_color}%}: %{$fg[red]%}%r%{${reset_color}%}？ [(y)es,(n)o,(a)bort,(e)dit]
 -> "
@@ -197,8 +205,16 @@ alias ll='ls -alFh'
 alias cp='cp -i'
 alias mv='mv -i'
 alias mkdir='mkdir -p'
+alias du='du -h'
+alias df='df -h'
+alias j='jobs -l'
 
-# sudo の後のコマンドでエイリアスを有効にする
+# rootのみうっかり削除を防止
+if [ $(id | sed -r 's/uid=([0-9]+)\(.*/\1/') -eq 0 ]; then
+  alias rm='rm -i'
+fi
+
+# sudoの後のコマンドでエイリアスを有効にする
 alias sudo='sudo '
 
 # グローバルエイリアス
