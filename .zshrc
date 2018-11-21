@@ -47,7 +47,7 @@ alias zgrep='zgrep --color=auto'
 autoload -Uz compinit && compinit
 
 # 予測変換機能を有効にする
-autoload -Uz predict-on && predict-on
+# autoload -Uz predict-on && predict-on
 
 # zshの補完にもLS_COLORSと同様の色を設定する
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
@@ -64,7 +64,7 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 # ps コマンドのプロセス名補完
 zstyle ':completion:*:processes' command 'ps x -o pid,s,args'
 
-#補完時に自分でカーソル移動で選択可能
+# 補完時に自分でカーソル移動で選択可能
 zstyle ':completion:*:default' menu select=1
 
 
