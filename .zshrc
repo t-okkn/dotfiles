@@ -95,7 +95,7 @@ fi
 # %{${fg_bold[${userColor}]}%}%n%# %{${reset_color}%}"
 # 2行表示
 PROMPT="
-[%{${fg_bold[${userColor}]}%}%n%{$reset_color%}@%m] %{$fg[cyan]%}%~
+[%{${fg[${userColor}]}%}%n%{$reset_color%}@%m] %{$fg[cyan]%}%~
 %{${reset_color}%}%# "
 
 # 右側のプロンプト
