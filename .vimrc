@@ -61,7 +61,6 @@ NeoBundleFetch 'Shougo/neobundle.vim'
 " pluginリスト
 NeoBundle 'nanotech/jellybeans.vim'
 NeoBundle 'jpo/vim-railscasts-theme'
-NeoBundle 'tomasr/molokai'
 NeoBundle 'vim-scripts/Wombat'
 NeoBundle 'kana/vim-submode'
 
@@ -73,7 +72,6 @@ filetype plugin indent on
 " ---neobundle settings End---
 
 " カラースキームの設定
-colorscheme molokai
 "colorscheme railscasts
-"colorscheme jellybeans
+colorscheme jellybeans
 

@@ -1,9 +1,6 @@
 ########################################
 # 環境設定
 ########################################
-# ロケール環境設定
-export LANG=ja_JP.UTF-8
-
 # Emacs 風キーバインドにする
 bindkey -e
 
@@ -20,10 +17,6 @@ select-word-style default
 # / も区切りと扱うので、^W でディレクトリ１つ分を削除できる
 zstyle ':zle:*' word-chars " /=;@:{},|"
 zstyle ':zle:*' word-style unspecified
-
-# SSH多段接続用環境変数の設定
-SOURCE_SSH_CONNECTION="$SOURCE_SSH_CONNECTION $SSH_CONNECTION"
-export SOURCE_SSH_CONNECTION
 
 
 ########################################
@@ -93,19 +86,12 @@ fi
 
 # HostNameColor
 local str_array=($(echo $SOURCE_SSH_CONNECTION))
-local ip_array=()
 
-for item in ${str_array[@]}; do
-  if [ "$(echo $item | grep \.)" ]; then
-    ip_array+=($item);
-  fi
-done
-
-case ${#array[@]} in
-  0) local p_host=$'%{\e[38;5;255m%}%m%{\e[m%}' ;;
-  2) local p_host=$'%{\e[38;5;001m%}%m%{\e[m%}' ;;
-  4) local p_host=$'%{\e[38;5;002m%}%m%{\e[m%}' ;;
-  *) local p_host=$'%{\e[38;5;003m%}%m%{\e[m%}' ;;
+case ${#str_array[@]} in
+  0) local p_host=$'%{\e[38;5;231m%}%m%{\e[m%}' ;;
+  4) local p_host=$'%{\e[38;5;112m%}%m%{\e[m%}' ;;
+  8) local p_host=$'%{\e[38;5;220m%}%m%{\e[m%}' ;;
+  *) local p_host=$'%{\e[38;5;234m%}%{\e[48;5;203m%}%m%{\e[m%}' ;;
 esac
 
 # 左側のプロンプト
