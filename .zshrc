@@ -21,6 +21,10 @@ select-word-style default
 zstyle ':zle:*' word-chars " /=;@:{},|"
 zstyle ':zle:*' word-style unspecified
 
+# SSH多段接続用環境変数の設定
+SOURCE_SSH_CONNECTION="$SOURCE_SSH_CONNECTION $SSH_CONNECTION"
+export SOURCE_SSH_CONNECTION
+
 
 ########################################
 # 色設定
@@ -79,27 +83,41 @@ autoload -Uz vcs_info
 # prompt adam1 とか
 
 # 変数の設定
-# 直前に実行したコマンドの戻り値が { 0 -> cyan; 0以外 -> magenta }
-local p_color="%(?.%{${fg[cyan]}%}.%{${fg[magenta]}%})"
-
-# rootはred、それ以外はblue
+# UserColor
+# rootは205（ピンク系）、それ以外は045（明るめの青）
 if [ $(id | sed -r 's/uid=([0-9]+)\(.*/\1/') -eq 0 ]; then
-  local userColor="red"
+  local p_user=$'%{\e[38;5;205m%}%n%{\e[m%}'
 else
-  local userColor="blue"
+  local p_user=$'%{\e[38;5;045m%}%n%{\e[m%}'
 fi
 
+# HostNameColor
+local str_array=($(echo $SOURCE_SSH_CONNECTION))
+local ip_array=()
+
+for item in ${str_array[@]}; do
+  if [ "$(echo $item | grep \.)" ]; then
+    ip_array+=($item);
+  fi
+done
+
+case ${#array[@]} in
+  0) local p_host=$'%{\e[38;5;255m%}%m%{\e[m%}' ;;
+  2) local p_host=$'%{\e[38;5;001m%}%m%{\e[m%}' ;;
+  4) local p_host=$'%{\e[38;5;002m%}%m%{\e[m%}' ;;
+  *) local p_host=$'%{\e[38;5;003m%}%m%{\e[m%}' ;;
+esac
+
 # 左側のプロンプト
-# 1行表示
-# PROMPT="
-# %{${fg_bold[${userColor}]}%}%n%# %{${reset_color}%}"
-# 2行表示
 PROMPT="
-[%{${fg[${userColor}]}%}%n%{$reset_color%}@%m] %{$fg[cyan]%}%~
-%{${reset_color}%}%# "
+[${p_user}@${p_host}] %{$fg[cyan]%}%~
+%{${reset_color}%}%(!.#.$) "
+
+# 直前に実行したコマンドの戻り値が { 0 -> cyan; 0以外 -> magenta }
+local return_color="%(?.%{${fg[cyan]}%}.%{${fg[magenta]}%})"
 
 # 右側のプロンプト
-RPROMPT="${p_color} return:[%?]%{${reset_color}%}"
+RPROMPT="${return_color} return:[%?]%{${reset_color}%}"
 
 # git用のvcs_info
 # 【参照】https://qiita.com/umasoya/items/f3bd6cffd418f3830b75
@@ -112,7 +130,7 @@ zstyle ':vcs_info:*' actionformats '%F{red}[%b|%a]%f'
 # hook用関数
 function _update_vcs_info_msg() {
   LANG=en_US.UTF-8 vcs_info
-  RPROMPT="${vcs_info_msg_0_}${p_color} return:[%?]%{${reset_color}%}"
+  RPROMPT="${vcs_info_msg_0_}${return_color} return:[%?]%{${reset_color}%}"
 }
 
 add-zsh-hook precmd _update_vcs_info_msg
