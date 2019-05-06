@@ -206,7 +206,7 @@ bindkey '^S' history-incremental-pattern-search-forward
 ########################################
 alias l='ls -CF'
 alias la='ls -CFA'
-alias ll='ls -alFh'
+alias ll='ls -alFh --time-style=long-iso'
 
 alias cp='cp -i'
 alias mv='mv -i'
