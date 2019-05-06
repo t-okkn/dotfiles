@@ -187,9 +187,11 @@ setopt extended_glob
 
 # Googleカラーでサジェスト
 setopt correct
-SPROMPT="( ´・ω・) ＜ %{$fg[blue]%}も%{${reset_color}%}%{$fg[red]%}し%{${reset_color}%}%{$fg[yellow]%}か%{${reset_color}%}%{$fg[green]%}し%{${reset_color}%}%{$fg[red]%}て%{${reset_color}%}: %{$fg[red]%}%r%{${reset_color}%}？ [(y)es,(n)o,(a)bort,(e)dit]
--> "
-
+if [[ $TERM == 'linux' ]]; then
+  SPROMPT=":‑/ < %{$fg[blue]%}Di%{${reset_color}%}%{$fg[red]%}d %{${reset_color}%}%{$fg[yellow]%}yo%{${reset_color}%}%{$fg[blue]%}u %{${reset_color}%}%{$fg[green]%}me%{${reset_color}%}%{$fg[red]%}an%{${reset_color}%}...; %{$fg[red]%}%r%{${reset_color}%}? [(y)es, (n)o, (a)bort, (e)dit] -> "
+else
+  SPROMPT="( ´・ω・) ＜ %{$fg[blue]%}も%{${reset_color}%}%{$fg[red]%}し%{${reset_color}%}%{$fg[yellow]%}か%{${reset_color}%}%{$fg[green]%}し%{${reset_color}%}%{$fg[red]%}て%{${reset_color}%}: %{$fg[red]%}%r%{${reset_color}%}？ [(y)es, (n)o, (a)bort, (e)dit] -> "
+fi
 
 ########################################
 # キーバインド
