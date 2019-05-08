@@ -85,7 +85,8 @@ else
 fi
 
 # HostNameColor
-local str_array=($(echo $SOURCE_SSH_CONNECTION))
+local -a str_array
+str_array=($(echo $SOURCE_SSH_CONNECTION))
 
 case ${#str_array[@]} in
   0) local p_host=$'%{\e[38;5;231m%}%m%{\e[m%}' ;;
