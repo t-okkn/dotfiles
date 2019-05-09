@@ -89,10 +89,11 @@ local -a str_array
 str_array=($(echo $SOURCE_SSH_CONNECTION))
 
 case ${#str_array[@]} in
-  0) local p_host=$'%{\e[38;5;231m%}%m%{\e[m%}' ;;
-  4) local p_host=$'%{\e[38;5;112m%}%m%{\e[m%}' ;;
+  0) local p_host=$'%{\e[38;5;015m%}%m%{\e[m%}' ;;
+  4) local p_host=$'%{\e[38;5;156m%}%m%{\e[m%}' ;;
   8) local p_host=$'%{\e[38;5;220m%}%m%{\e[m%}' ;;
-  *) local p_host=$'%{\e[38;5;234m%}%{\e[48;5;203m%}%m%{\e[m%}' ;;
+  12) local p_host=$'%{\e[38;5;218m%}%m%{\e[m%}' ;;
+  *) local p_host=$'%{\e[38;5;218m%}%{\e[48;5;197m%}%m !!TOO MANY CASCADE CONNECTION!!%{\e[m%}' ;;
 esac
 
 # 左側のプロンプト
