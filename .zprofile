@@ -16,3 +16,6 @@ if [ -z $TMUX ]; then
 fi
 export SOURCE_SSH_CONNECTION
 
+# GO言語モジュール導入用
+export GO111MODULE=on
+
