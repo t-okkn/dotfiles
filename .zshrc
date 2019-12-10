@@ -236,3 +236,18 @@ alias -g G='| grep'
 # mkcd [Path] => ディレクトリの作成と対象ディレクトリの移動を同時に行う
 function mkcd(){mkdir $1 && cd $1}
 
+# kill-session => SSHなどで強制切断されて残ってしまったセッションをkillする
+function kill-session() {
+  # プロセス一覧から検索する文字列を「w」コマンドから構築
+  local search=$(w | tail -n +3 | awk '{ printf("%s.\\+", $2); for(i=8; i<NF; i++) { printf("%s ", $i) } printf("%s\n", $NF)}' | head -n -1 | grep pts | grep -v grep)
+
+  # プロセス一覧から検索文字列を用いて、Killすべきpidの一覧を求める
+  local target_pids=$(for i in $search; do ps -ef | grep -e "$i" | grep -v grep | awk '{ print $3 }'; done)
+
+  # すべてのpidをkillする
+  for i in $(echo $target_pids | tr "\n" " "); do
+    if [ -n $i ]; then
+      kill -9 $i
+    fi
+  done
+}
