@@ -277,8 +277,8 @@ function png2jpg() {
   mogrify -format jpg -quality 90 -resize $resize *.png
 }
 
-# images2pdf => 画像ファイルの入ったフォルダ群を画像pdfファイルに変換する
-function images2pdf() {
+# img2pdf => 画像ファイルの入ったフォルダ群を画像pdfファイルに変換する
+function img2pdf() {
   (
     IFS=$'\n'
 
