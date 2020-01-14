@@ -233,8 +233,22 @@ alias -g G='| grep'
 ########################################
 # 自作関数
 ########################################
-# mkcd [Path] => ディレクトリの作成と対象ディレクトリの移動を同時に行う
-function mkcd() {mkdir $1 && cd $1}
+# mkcd path => ディレクトリの作成と対象ディレクトリの移動を同時に行う
+function mkcd() {
+  if [ ! $1 = "" ]; then
+    if [ ! -d $1 ]; then
+      # フォルダが存在しなければ作成して移動
+      mkdir $1 && cd $1
+
+    else
+      # フォルダが存在すればただの移動
+      cd $1
+    fi
+
+  else
+    echo "Usage: mkcd path"
+  fi
+}
 
 # kill-session => SSHなどで強制切断されて残ってしまったセッションをkillする
 function kill-session() {
@@ -250,6 +264,17 @@ function kill-session() {
       kill -9 $i
     fi
   done
+}
+
+# png2jpg [resize] => Convert from png format to jpg format
+function png2jpg() {
+  local resize="100%"
+
+  if [ ! $1 = "" ]; then
+    resize=$(echo "$1" | cut -d " " -f 1)
+  fi
+
+  mogrify -format jpg -quality 90 -resize $resize *.png
 }
 
 # images2pdf => 画像ファイルの入ったフォルダ群を画像pdfファイルに変換する
