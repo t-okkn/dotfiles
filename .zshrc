@@ -276,7 +276,7 @@ function images2pdf() {
 ########################################
 zshaddhistory() {
   # STEALTHを含むホストへのSSH接続はhistoryに残さない
-  if [[ "${1%%$'\n'}" =~ ^ssh.+STEALTH.* ]]; then
+  if [[ "${1%%$'\n'}" =~ ^ssh.\+STEALTH.* ]]; then
     false
   fi
 }
