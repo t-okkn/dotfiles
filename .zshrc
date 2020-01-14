@@ -234,7 +234,7 @@ alias -g G='| grep'
 # 自作関数
 ########################################
 # mkcd [Path] => ディレクトリの作成と対象ディレクトリの移動を同時に行う
-function mkcd(){mkdir $1 && cd $1}
+function mkcd() {mkdir $1 && cd $1}
 
 # kill-session => SSHなどで強制切断されて残ってしまったセッションをkillする
 function kill-session() {
@@ -251,3 +251,33 @@ function kill-session() {
     fi
   done
 }
+
+# images2pdf => 画像ファイルの入ったフォルダ群を画像pdfファイルに変換する
+function images2pdf() {
+  (
+    IFS=$'\n'
+
+    for i in $(find ./ -mindepth 1 -maxdepth 1 -type d -print)
+      do e=$(\ls -1 --color=none $i/ | head -n 1 | sed -r 's/^.*\.//')
+
+        if [ -z "$(\ls -1 --color=none $i/ | grep -v \.$e)" ]; then
+          convert $i/*.$e ${i##*/}.pdf && exiftool -title="${i##*/}" ${i##*/}.pdf > /dev/null && echo "${i##*/} -> Success"
+
+        else
+          echo "${i##*/} -> 【.${e}】以外の拡張子のファイルが存在します"
+        fi
+      done
+    ) && rm -f *pdf_original
+}
+
+
+########################################
+# zsh_history記録除外設定
+########################################
+zshaddhistory() {
+  # STEALTHを含むホストへのSSH接続はhistoryに残さない
+  if [[ "${1%%$'\n'}" =~ ^ssh.+STEALTH.* ]]; then
+    false
+  fi
+}
+
