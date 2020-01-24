@@ -252,8 +252,11 @@ function mkcd() {
 
 # kill-session => SSHなどで強制切断されて残ってしまったセッションをkillする
 function kill-session() {
+  # 除外文字列の構築
+  local exclude=$(echo "(grep|$(tty | sed 's/\/dev\///'))")
+
   # プロセス一覧から検索する文字列を「w」コマンドから構築
-  local search=$(w | tail -n +3 | awk '{ printf("%s.+%s\n", $2, $8) }' | grep pts | grep -Ev "(grep|w)")
+  local search=$(w | tail -n +3 | awk '{ printf("%s.+%s\n", $2, $8) }' | grep pts | grep -Ev "$exclude")
 
   # プロセス一覧から検索文字列を用いて、Killすべきpidの一覧を求める
   local target_pids=$(for i in $search; do ps -ef | grep -E "$i" | grep -v grep | awk '{ print $3 }'; done)
