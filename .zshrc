@@ -229,6 +229,10 @@ alias sudo='sudo '
 alias -g L='| less'
 alias -g G='| grep'
 
+# tmux関連
+alias tl='tmux ls'
+alias ta='tmux-all'
+
 
 ########################################
 # 自作関数
@@ -248,6 +252,15 @@ function mkcd() {
   else
     echo "Usage: mkcd path"
   fi
+}
+
+# tmux-all => tmuxで稼働中のセッションについて、window, paneの詳細情報も含めて表示する
+function tmux-all() {
+  tmux list-windows -a -F '#{window_id} #{window_layout}' \
+    | while read w i; do
+        echo $w $i
+        tmux list-panes -t "$w" -F "  #D #{pane_tty} #T #{pane_current_command}"
+      done
 }
 
 # kill-session => SSHなどで強制切断されて残ってしまったセッションをkillする
@@ -285,17 +298,18 @@ function img2pdf() {
   (
     IFS=$'\n'
 
-    for i in $(find ./ -mindepth 1 -maxdepth 1 -type d -print)
-      do e=$(\ls -1 --color=none $i/ | head -n 1 | sed -r 's/^.*\.//')
+    for i in $(find ./ -mindepth 1 -maxdepth 1 -type d -print); do
+      e=$(\ls -1 --color=none $i/ | head -n 1 | sed -r 's/^.*\.//')
 
-        if [ -z "$(\ls -1 --color=none $i/ | grep -v \.$e)" ]; then
-          convert $i/*.$e ${i##*/}.pdf && exiftool -title="${i##*/}" ${i##*/}.pdf > /dev/null && echo "${i##*/} -> Success"
+      if [ -z "$(\ls -1 --color=none $i/ | grep -v \.$e)" ]; then
+        convert $i/*.$e ${i##*/}.pdf && exiftool -title="${i##*/}" ${i##*/}.pdf > /dev/null \
+          && echo "${i##*/} -> Success"
 
-        else
-          echo "${i##*/} -> 【.${e}】以外の拡張子のファイルが存在します"
-        fi
-      done
-    ) && rm -f *pdf_original
+      else
+        echo "${i##*/} -> 【.${e}】以外の拡張子のファイルが存在します"
+      fi
+    done
+  ) && rm -f *pdf_original
 }
 
 # encrypt-text text => テキストを暗号化する
