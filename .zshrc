@@ -228,8 +228,10 @@ alias sudo='sudo '
 # グローバルエイリアス
 alias -g L='| less'
 alias -g G='| grep'
+alias -g F='| fzf'
 
 # tmux関連
+alias t='tmux-attach'
 alias tl='tmux ls'
 alias ta='tmux-all'
 
@@ -251,6 +253,15 @@ function mkcd() {
 
   else
     echo "Usage: mkcd path"
+  fi
+}
+
+# tmux-attach [sesssion] => tmuxのセッションに接続する
+function tmux-attach() {
+  if [ ! $1 = "" ]; then
+    tmux attach -t $1 || tmux
+  else
+    tmux attach || tmux
   fi
 }
 
