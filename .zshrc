@@ -340,8 +340,8 @@ function decrypt-text() {
 ########################################
 zshaddhistory() {
   # STEALTHを含むホストへのSSH接続はhistoryに残さない
-  if [[ "${1%%$'\n'}" =~ ^ssh.\+STEALTH.* ]]; then
-    false
-  fi
+  #if [[ "${1%%$'\n'}" =~ ^ssh.\+STEALTH.* ]]; then
+  #  false
+  #fi
 }
 
