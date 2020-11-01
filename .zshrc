@@ -276,8 +276,14 @@ function tmux-all() {
 
 # kill-session => SSHなどで強制切断されて残ってしまったセッションをkillする
 function kill-session() {
+  # tmuxで開いているwindow情報を取得
+  local windows=$(tmux list-windows -a -F '#{window_id}' 2>/dev/null)
+
+  # tmuxで使用中の端末デバイスを取得
+  local tmux_pts=$(echo $windows | while read w; do tmux list-panes -t "$w" -F "#{pane_tty}" 2>/dev/null | sed 's/\/dev\///'; done)
+
   # 除外文字列の構築
-  local exclude=$(echo "(grep|$(tty | sed 's/\/dev\///'))")
+  local exclude=$(echo "(grep|$(tty | sed 's/\/dev\///')$(printf "$tmux_pts" | while read e; do printf "|$e"; done))")
 
   # プロセス一覧から検索する文字列を「w」コマンドから構築
   local search=$(w | tail -n +3 | awk '{ printf("%s.+%s\n", $2, $8) }' | grep pts | grep -Ev "$exclude")
@@ -286,8 +292,8 @@ function kill-session() {
   local target_pids=$(for i in $search; do ps -ef | grep -E "$i" | grep -v grep | awk '{ print $3 }'; done)
 
   # すべてのpidをkillする
-  for i in $(echo $target_pids | tr "\n" " "); do
-    if [ -n $i ]; then
+  echo $target_pids | while read i; do
+    if [ "$i" != "" ]; then
       kill -9 $i
     fi
   done
