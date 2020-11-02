@@ -313,22 +313,18 @@ function png2jpg() {
 
 # img2pdf => 画像ファイルの入ったフォルダ群を画像pdfファイルに変換する
 function img2pdf() {
-  (
-    IFS=$'\n'
+  find ./ -mindepth 1 -maxdepth 1 -type d -print | while read i; do
+    e=$(\ls -1 --color=none $i/ | head -n 1 | sed -r 's/^.*\.//')
 
-    for i in $(find ./ -mindepth 1 -maxdepth 1 -type d -print); do
-      e=$(\ls -1 --color=none $i/ | head -n 1 | sed -r 's/^.*\.//')
+    if [ -z "$(\ls -1 --color=none $i/ | grep -v \.$e)" ]; then
+      convert $i/*.$e ${i##*/}.pdf \
+        && exiftool -title="${i##*/}" ${i##*/}.pdf > /dev/null \
+        && echo "${i##*/} -> Success"
 
-      if [ -z "$(\ls -1 --color=none $i/ | grep -v \.$e)" ]; then
-        convert $i/*.$e ${i##*/}.pdf \
-          && exiftool -title="${i##*/}" ${i##*/}.pdf > /dev/null \
-          && echo "${i##*/} -> Success"
-
-      else
-        echo "${i##*/} -> 【.${e}】以外の拡張子のファイルが存在します"
-      fi
-    done
-  ) && rm -f *pdf_original
+    else
+      echo "${i##*/} -> 【.$e】以外の拡張子のファイルが存在します"
+    fi
+  done && rm -f *pdf_original
 }
 
 # encrypt-text text => テキストを暗号化する
