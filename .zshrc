@@ -232,8 +232,7 @@ alias -g F='| fzf'
 
 # tmux関連
 alias t='tmux-attach'
-alias tl='tmux ls'
-alias ta='tmux-all'
+alias tl='tmux-list-all'
 
 
 ########################################
@@ -256,31 +255,33 @@ function mkcd() {
   fi
 }
 
-# tmux-attach [sesssion] => tmuxのセッションに接続する
+# tmux-attach [sesssion_name] => tmuxのセッションに接続する
 function tmux-attach() {
-  if [ ! $1 = "" ]; then
-    tmux attach -t $1 || tmux
+  if [ "$1" != "" ]; then
+    tmux attach-session -t $1 2>/dev/null || tmux new-session -s $1
   else
-    tmux attach || tmux
+    tmux attach-session 2>/dev/null || tmux
   fi
 }
 
-# tmux-all => tmuxで稼働中のセッションについて、window, paneの詳細情報も含めて表示する
-function tmux-all() {
-  tmux list-windows -a -F '#{window_id} #{window_layout}' \
-    | while read w i; do
-        echo $w $i
-        tmux list-panes -t "$w" -F "  #D #{pane_tty} #T #{pane_current_command}"
+# tmux-list-all => tmuxで稼働中のセッションについて、window, paneの詳細情報も含めて表示する
+function tmux-list-all() {
+  tmux list-sessions -F '#{session_id} [name: #{session_name}] [created: #{t:session_created}] #{?session_attached,* attached,-}' \
+    | sort | while read s t; do
+        echo $s $t
+        tmux list-windows -t "$s" -F '#{window_id} [name: #{window_name}] [#{window_width}x#{window_height}] [layout: #{window_layout}]' \
+          | while read w x; do
+              echo "  $w" $x
+              tmux list-panes -t "$w" -F "    #D($s:#I.#P) [title: #T] [tty: #{pane_tty}] [command: #{pane_current_command}]"
+              echo
+            done
       done
 }
 
 # kill-session => SSHなどで強制切断されて残ってしまったセッションをkillする
 function kill-session() {
-  # tmuxで開いているwindow情報を取得
-  local windows=$(tmux list-windows -a -F '#{window_id}' 2>/dev/null)
-
   # tmuxで使用中の端末デバイスを取得
-  local tmux_pts=$(echo $windows | while read w; do tmux list-panes -t "$w" -F "#{pane_tty}" 2>/dev/null | sed 's/\/dev\///'; done)
+  local tmux_pts=$(tmux list-panes -a -F "#{pane_tty}" 2>/dev/null | sed 's/\/dev\///')
 
   # 除外文字列の構築
   local exclude=$(echo "(grep|$(tty | sed 's/\/dev\///')$(printf "$tmux_pts" | while read e; do printf "|$e"; done))")
@@ -319,7 +320,8 @@ function img2pdf() {
       e=$(\ls -1 --color=none $i/ | head -n 1 | sed -r 's/^.*\.//')
 
       if [ -z "$(\ls -1 --color=none $i/ | grep -v \.$e)" ]; then
-        convert $i/*.$e ${i##*/}.pdf && exiftool -title="${i##*/}" ${i##*/}.pdf > /dev/null \
+        convert $i/*.$e ${i##*/}.pdf \
+          && exiftool -title="${i##*/}" ${i##*/}.pdf > /dev/null \
           && echo "${i##*/} -> Success"
 
       else
