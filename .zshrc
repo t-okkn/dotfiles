@@ -284,7 +284,7 @@ function kill-session() {
   local tmux_pts=$(tmux list-panes -a -F "#{pane_tty}" 2>/dev/null | sed 's/\/dev\///')
 
   # 除外文字列の構築
-  local exclude=$(echo "(grep|$(tty | sed 's/\/dev\///')$(printf "$tmux_pts" | while read e; do printf "|$e"; done))")
+  local exclude=$(echo "(grep|$(tty | sed 's/\/dev\///')$(if [ "$tmux_pts" != "" ]; then echo $tmux_pts | while read e; do printf "|$e"; done; fi))")
 
   # プロセス一覧から検索する文字列を「w」コマンドから構築
   local search=$(w | tail -n +3 | awk '{ printf("%s.+%s\n", $2, $8) }' | grep pts | grep -Ev "$exclude")
