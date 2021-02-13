@@ -240,7 +240,7 @@ alias tl='tmux-list-all'
 ########################################
 # mkcd path => ディレクトリの作成と対象ディレクトリの移動を同時に行う
 function mkcd() {
-  if [ ! $1 = "" ]; then
+  if [ "$1" != "" ]; then
     if [ ! -d $1 ]; then
       # フォルダが存在しなければ作成して移動
       mkdir $1 && cd $1
@@ -325,43 +325,6 @@ function img2pdf() {
       echo "${i##*/} -> 【.$e】以外の拡張子のファイルが存在します"
     fi
   done && rm -f *pdf_original
-}
-
-# encrypt-text text => テキストを暗号化する
-function encrypt-text() {
-  if [ ! $1 = "" ]; then
-    if [ -z $PUBLICKEY_PATH ]; then
-      echo "[PUBLICKEY_PATH] 公開鍵のPATHが設定されていません"
-      return 1
-    fi
-
-    if [ ! -e $PUBLICKEY_PATH ]; then
-      echo "公開鍵が存在しません"
-      return 1
-    fi
-
-    echo "$1" | openssl rsautl -encrypt -pubin -inkey $PUBLICKEY_PATH | openssl base64
-
-  else
-    echo "Usage: encrypt-text text"
-  fi
-}
-
-# decrypt-text text => テキストを復号する
-function decrypt-text() {
-  if [ ! $1 = "" ]; then
-    local privatekey="${HOME}/.ssh/Key"
-
-    if [ ! -e $privatekey ]; then
-      echo "秘密鍵が存在しません"
-      return 1
-    fi
-
-    echo "$1" | openssl base64 -d | openssl rsautl -decrypt -inkey $privatekey
-
-  else
-    echo "Usage: decrypt-text text"
-  fi
 }
 
 ########################################

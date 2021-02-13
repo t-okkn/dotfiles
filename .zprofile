@@ -16,12 +16,6 @@ if [ -z $TMUX ]; then
 fi
 export SOURCE_SSH_CONNECTION
 
-# 暗号化用公開鍵のPATH設定
-if [ -n $HOME ]; then
-  PUBLICKEY_PATH="${HOME}/dotfiles/etc/PublicKey"
-  export PUBLICKEY_PATH
-fi
-
 # GO言語モジュール導入用
 export GO111MODULE=on
 
