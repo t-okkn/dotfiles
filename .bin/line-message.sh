@@ -11,7 +11,7 @@ TOKEN=""
 if [ "$2" != "" ]; then
   TOKEN="$2"
 else
-  if [ "LINE_SECRET_TOKEN" != "" ]; then
+  if [ "$LINE_SECRET_TOKEN" != "" ]; then
     TOKEN="$LINE_SECRET_TOKEN"
   fi
 fi
