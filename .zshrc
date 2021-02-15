@@ -78,7 +78,7 @@ autoload -Uz vcs_info
 # 変数の設定
 # UserColor
 # rootは205（ピンク系）、それ以外は045（明るめの青）
-if [ $(id | sed -r 's/uid=([0-9]+)\(.*/\1/') -eq 0 ]; then
+if [ $(id -u) -eq 0 ]; then
   local p_user=$'%{\e[38;5;205m%}%n%{\e[m%}'
 else
   local p_user=$'%{\e[38;5;045m%}%n%{\e[m%}'
@@ -218,7 +218,7 @@ alias df='df -h'
 alias j='jobs -l'
 
 # rootのみうっかり削除を防止
-if [ $(id | sed -r 's/uid=([0-9]+)\(.*/\1/') -eq 0 ]; then
+if [ $(id -u) -eq 0 ]; then
   alias rm='rm -i'
 fi
 
