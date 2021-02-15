@@ -11,13 +11,35 @@ fi
 
 # SSH多段接続用環境変数の設定
 # TMUXログインを考慮
-if [ -z $TMUX ]; then
-  if [ "$SOURCE_SSH_CONNECTION" = "" ]; then
-    SOURCE_SSH_CONNECTION="$SSH_CONNECTION"
+if [ "$TMUX" = "" ]; then
+  if [ "$SSH_CONNECTION" = "" ]; then
+    SOURCE_SSH_CONNECTION="-,0"
+
   else
-    SOURCE_SSH_CONNECTION="$SOURCE_SSH_CONNECTION $SSH_CONNECTION"
+    from_host=$(echo $SSH_CONNECTION | awk '{ print $1 }')
+    from_port=$(echo $SSH_CONNECTION | awk '{ print $2 }')
+    to_host=$(echo $SSH_CONNECTION | awk '{ print $3 }')
+    to_port=$(echo $SSH_CONNECTION | awk '{ print $4 }')
+
+    if [ "$SOURCE_SSH_CONNECTION" = "-,0" ]; then
+      SOURCE_SSH_CONNECTION="${from_host}:${from_port} -> ${to_port}:${to_host}"
+
+    else
+      from=":${from_port}"
+      last_host=$(echo ${SOURCE_SSH_CONNECTION##*:} | sed -r -e 's/,[0-9]+//')
+
+      if [ "$last_host" != "$from_host" ]; then
+        from="(${from_host}):${from_port}"
+      fi
+
+      SOURCE_SSH_CONNECTION="${SOURCE_SSH_CONNECTION%,*}${from} -> ${to_port}:${to_host}"
+    fi
+
+    count=$(echo $SOURCE_SSH_CONNECTION | awk -F ' -> ' '{ print NF-1 }')
+    SOURCE_SSH_CONNECTION="${SOURCE_SSH_CONNECTION},$count"
   fi
 fi
+
 export SOURCE_SSH_CONNECTION
 
 # PATHに[$HOME/.bin]を追加

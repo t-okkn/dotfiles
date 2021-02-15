@@ -85,14 +85,11 @@ else
 fi
 
 # HostNameColor
-local -a str_array
-str_array=($(echo $SOURCE_SSH_CONNECTION))
-
-case ${#str_array[@]} in
+case ${SOURCE_SSH_CONNECTION##*,} in
   0) local p_host=$'%{\e[38;5;015m%}%m%{\e[m%}' ;;
-  4) local p_host=$'%{\e[38;5;156m%}%m%{\e[m%}' ;;
-  8) local p_host=$'%{\e[38;5;220m%}%m%{\e[m%}' ;;
-  12) local p_host=$'%{\e[38;5;218m%}%m%{\e[m%}' ;;
+  1) local p_host=$'%{\e[38;5;156m%}%m%{\e[m%}' ;;
+  2) local p_host=$'%{\e[38;5;220m%}%m%{\e[m%}' ;;
+  3) local p_host=$'%{\e[38;5;218m%}%m%{\e[m%}' ;;
   *) local p_host=$'%{\e[38;5;218m%}%{\e[48;5;197m%}%m !!TOO MANY CASCADE CONNECTION!!%{\e[m%}' ;;
 esac
 
