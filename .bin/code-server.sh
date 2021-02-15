@@ -1,26 +1,38 @@
 #!/bin/bash
 
 if [ $(id -u) -ne 0 ]; then
-  echo "root権限で実行してください"
+  echo "[ERROR:1] root権限で実行してください"
   exit 1
 fi
 
 if [ "$1" = "" ]; then
   echo "Usage: $0 <{new | update | delete}> [user]"
+  exit 127
+fi
+
+OS_ID=$(cat /etc/os-release | grep -E "^ID=" | sed 's/ID=//')
+
+if [ "$OS_ID" != "ubuntu" ] && [ "$OS_ID" != "debian" ];then
+  echo "[ERROR:2] Debian または Ubuntu 系のLinuxのみで使用可能です"
   exit 2
 fi
 
-TARGET_USER="root"
+TARGET_USER=$(env | grep -E "^USER=" | sed 's/USER=//')
 
 if [ "$2" != "" ]; then
   id $2 &> /dev/null
 
   if [ $? -eq 1 ]; then
-    echo "指定されたUserは存在しません"
+    echo "[ERROR:3] 指定されたUserは存在しません"
     exit 3
   fi
 
   TARGET_USER="$2"
+
+else
+  if [ "$(env | grep SUDO_USER)" != "" ]; then
+    TARGET_USER=$(env | grep SUDO_USER | sed 's/SUDO_USER=//')
+  fi
 fi
 
 GITHUB_URL="https://github.com/cdr/code-server"
@@ -59,7 +71,7 @@ function send_message() {
 
 if [ "$1" = "new" ]; then
   if type "code-server" &> /dev/null; then
-    echo "code-server は既にインストール済みです"
+    echo "[ERROR:4] code-server は既にインストール済みです"
     exit 4
   fi
 
@@ -107,8 +119,8 @@ elif [ "$1" = "update" ]; then
 
 elif [ "$1" = "delete" ]; then
   if !(type "code-server" &> /dev/null); then
-    echo "code-server はインストールされていません"
-    exit 4
+    echo "[ERROR:5] code-server はインストールされていません"
+    exit 5
   fi
 
   rm -f $CONFIG_OLD
@@ -117,7 +129,7 @@ elif [ "$1" = "delete" ]; then
   dpkg -r code-server
 
 else
-  echo "Unknown subcommand: $1"
+  echo "[ERROR:255] Unknown subcommand: $1"
   echo "Usage: $0 <{new | update | delete}> [user]"
   exit 255
 fi
