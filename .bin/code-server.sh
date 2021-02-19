@@ -65,7 +65,7 @@ function update_password() {
 
 function send_message() {
   msg=$(echo -e "【code-serverパスワード変更通知】\n\n$PASSWORD")
-  line-message.sh $msg
+  line-message.sh "$msg"
 }
 
 
