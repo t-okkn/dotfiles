@@ -43,8 +43,8 @@ fi
 export SOURCE_SSH_CONNECTION
 
 # PATHに[$HOME/.bin]を追加
-if [ -n $HOME/.bin ];then
-   PATH=$PATH:$HOME/.bin
+if [ -d $HOME/.bin ]; then
+  PATH=$PATH:$HOME/.bin
 fi
 
 # GO言語モジュール導入用
