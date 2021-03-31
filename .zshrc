@@ -6,8 +6,8 @@ bindkey -e
 
 # ヒストリの設定
 HISTFILE=${HOME}/.zsh_history
-HISTSIZE=1000000
-SAVEHIST=1000000
+HISTSIZE=20000
+SAVEHIST=20000
 
 # 単語の区切り文字を指定する
 autoload -Uz select-word-style
