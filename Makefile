@@ -5,7 +5,7 @@ DOTFILES   := $(filter-out $(EXCLUSIONS), $(CANDIDATES))
 
 THISYEAR := $(shell date "+%Y")
 
-list: ## Show dot files in this repo
+list: ## Show dotfiles in this repo
 	@$(foreach val, $(DOTFILES), /bin/ls -dF $(val);)
 
 install: ## Create symlink to home directory
@@ -14,10 +14,23 @@ install: ## Create symlink to home directory
 	@echo ''
 	@$(foreach val, $(DOTFILES), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
 
-clean: ## Remove the dot files and this repo
-	@echo 'Remove dot files in your home directory...'
-	@-$(foreach val, $(DOTFILES), rm -vrf $(HOME)/$(val);)
+uninstall: clean ## Remove the dotfiles and this repository
+	@echo ''
+	@echo 'Next, remove this repository in your home directory...'
 	-rm -rf $(DOTPATH)
+	@echo 'Done.'
+	@echo 'Thank you for using t-okkn/gotfiles!!'
+
+clean: ## Remove the dotfiles
+	@echo 'Remove dotfiles in your home directory...'
+	@-$(foreach val, $(DOTFILES), rm -vrf $(HOME)/$(val);)
+
+reinstall: clean ## Reinstall the dotfiles
+	@echo ''
+	@echo 'Next, install dotfiles in your home directory...'
+	@$(foreach val, $(DOTFILES), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
+	@echo ''
+	@echo 'Reinstalled successful!!'
 
 help: ## Self-documented Makefile
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
