@@ -28,15 +28,27 @@ zstyle ':zle:*' word-style unspecified
 autoload -Uz colors && colors
 
 # lsの色設定
-export LS_COLORS='di=36:ln=1;31:so=35:pi=33:ex=32:or=30;41:mi=1;31;47:bd=1;31;44:cd=1;33;44:su=30;42:sg=34;42:tw=31;42:ow=1;36;40:st=1;36;41'
-alias ls='ls --color=auto'
+if type dircolors >& /dev/null; then
+  if [ -r ${HOME}/.dircolors ]; then
+    eval "$(dircolors -b ${HOME}/.dircolors)"
+
+  else
+    export LS_COLORS='rs=0:di=36:ln=01;31:mh=00:pi=01;35:so=35:do=04;35:bd=01;04;33:cd=01;33:or=37;41:mi=01;37;41:su=33:sg=04;33:ca=01;31;47:tw=04;37;46:ow=37;46:st=04;36:ex=01;32'
+  fi
+
+  alias ls='ls --color=auto'
+fi
 
 # grepの色設定
-export GREP_COLOR="1;35"
+export GREP_COLOR="01;31"
+
 alias grep='grep --color=auto'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias zgrep='zgrep --color=auto'
+
+# gccの色設定
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 
 ########################################
@@ -201,37 +213,12 @@ fi
 bindkey '^R' history-incremental-pattern-search-backward
 bindkey '^S' history-incremental-pattern-search-forward
 
-
 ########################################
-# エイリアス
+# Alias設定
 ########################################
-alias l='ls -CF'
-alias la='ls -CFA'
-alias ll='ls -alFh --time-style=long-iso'
-
-alias cp='cp -i'
-alias mv='mv -i'
-alias mkdir='mkdir -p'
-alias du='du -h'
-alias df='df -h'
-alias j='jobs -l'
-
-# rootのみうっかり削除を防止
-if [ $(id -u) -eq 0 ]; then
-  alias rm='rm -i'
+if [ -f ${HOME}/.bash_aliases ]; then
+    source ${HOME}/.bash_aliases
 fi
-
-# sudoの後のコマンドでエイリアスを有効にする
-alias sudo='sudo '
-
-# グローバルエイリアス
-alias -g L='| less'
-alias -g G='| grep'
-alias -g F='| fzf'
-
-# tmux関連
-alias t='tmux-attach'
-alias tl='tmux-list-all'
 
 
 ########################################
