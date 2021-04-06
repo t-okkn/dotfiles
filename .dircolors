@@ -1,0 +1,186 @@
+# Configuration file for dircolors, a utility to help you set the
+# LS_COLORS environment variable used by GNU ls with the --color option.
+# Copyright (C) 1996-2018 Free Software Foundation, Inc.
+# Copying and distribution of this file, with or without modification,
+# are permitted provided the copyright notice and this notice are preserved.
+# The keywords COLOR, OPTIONS, and EIGHTBIT (honored by the
+# slackware version of dircolors) are recognized but ignored.
+# Below are TERM entries, which can be a glob patterns, to match
+# against the TERM environment variable to determine if it is colorizable.
+TERM Eterm
+TERM ansi
+TERM *color*
+TERM con[0-9]*x[0-9]*
+TERM cons25
+TERM console
+TERM cygwin
+TERM dtterm
+TERM gnome
+TERM hurd
+TERM jfbterm
+TERM konsole
+TERM kterm
+TERM linux
+TERM linux-c
+TERM mlterm
+TERM putty
+TERM rxvt*
+TERM screen*
+TERM st
+TERM terminator
+TERM tmux*
+TERM vt100
+TERM xterm*
+# Below are the color init strings for the basic file types. A color init
+# string consists of one or more of the following numeric codes:
+# Attribute codes:
+# 00=none 01=bold 03=Italic 04=underscore 05=blink 07=reverse 08=concealed
+# Text color codes:
+# 30=black 31=red 32=green 33=yellow 34=blue 35=magenta 36=cyan 37=white
+# Background color codes:
+# 40=black 41=red 42=green 43=yellow 44=blue 45=magenta 46=cyan 47=white
+#NORMAL 00 # no color code at all
+#FILE 00 # regular file: use no color at all
+RESET 0 # reset to "normal" color
+DIR 36 # directory
+LINK 01;31 # symbolic link. (If you set this to 'target' instead of a
+ # numerical value, the color is as for the file pointed to.)
+MULTIHARDLINK 00 # regular file with more than one link
+FIFO 01;35 # pipe
+SOCK 35 # socket
+DOOR 04;35 # door
+BLK 01;04;33 # block device driver
+CHR 01;33 # character device driver
+ORPHAN 37;41 # symlink to nonexistent file, or non-stat'able file ...
+MISSING 01;37;41 # ... and the files they point to
+SETUID 33 # file that is setuid (u+s)
+SETGID 04;33 # file that is setgid (g+s)
+CAPABILITY 01;31;47 # file with capability
+STICKY_OTHER_WRITABLE 04;37;46 # dir that is sticky and other-writable (+t,o+w)
+OTHER_WRITABLE 37;46 # dir that is other-writable (o+w) and not sticky
+STICKY 04;36 # dir with the sticky bit set (+t) and not other-writable
+# This is for files with execute permission:
+EXEC 01;32
+# List any file extensions like '.gz' or '.tar' that you would like ls
+# to colorize below. Put the extension, a space, and the color init string.
+# (and any comments you want to add after a '#')
+# archives or compressed (bright blue)
+.tar 01;34
+.tgz 01;34
+.arc 01;34
+.arj 01;34
+.taz 01;34
+.lha 01;34
+.lz4 01;34
+.lzh 01;34
+.lzma 01;34
+.tlz 01;34
+.txz 01;34
+.tzo 01;34
+.t7z 01;34
+.zip 01;34
+.z 01;34
+.dz 01;34
+.gz 01;34
+.lrz 01;34
+.lz 01;34
+.lzo 01;34
+.xz 01;34
+.zst 01;34
+.tzst 01;34
+.bz2 01;34
+.bz 01;34
+.tbz 01;34
+.tbz2 01;34
+.tz 01;34
+.deb 01;34
+.rpm 01;34
+.jar 01;34
+.war 01;34
+.ear 01;34
+.sar 01;34
+.rar 01;34
+.alz 01;34
+.ace 01;34
+.zoo 01;34
+.cpio 01;34
+.7z 01;34
+.rz 01;34
+.cab 01;34
+.wim 01;34
+.swm 01;34
+.dwm 01;34
+.esd 01;34
+# image and video formats
+#.jpg 01;35
+#.jpeg 01;35
+#.mjpg 01;35
+#.mjpeg 01;35
+#.gif 01;35
+#.bmp 01;35
+#.pbm 01;35
+#.pgm 01;35
+#.ppm 01;35
+#.tga 01;35
+#.xbm 01;35
+#.xpm 01;35
+#.tif 01;35
+#.tiff 01;35
+#.ts 01;35
+#.png 01;35
+#.svg 01;35
+#.svgz 01;35
+#.mng 01;35
+#.pcx 01;35
+#.mov 01;35
+#.mpg 01;35
+#.mpeg 01;35
+#.mpeg2 01;35
+#.mpeg4 01;35
+#.m2v 01;35
+#.mkv 01;35
+#.webm 01;35
+#.ogm 01;35
+#.mp4 01;35
+#.m4v 01;35
+#.mp4v 01;35
+#.vob 01;35
+#.qt 01;35
+#.nuv 01;35
+#.wmv 01;35
+#.asf 01;35
+#.rm 01;35
+#.rmvb 01;35
+#.flc 01;35
+#.avi 01;35
+#.fli 01;35
+#.flv 01;35
+#.gl 01;35
+#.dl 01;35
+#.xcf 01;35
+#.xwd 01;35
+#.yuv 01;35
+#.cgm 01;35
+#.emf 01;35
+#.ogv 01;35
+#.ogx 01;35
+# audio formats
+#.aac 01;36
+#.ape 01;36
+#.au 01;36
+#.flac 01;36
+#.m4a 01;36
+#.mid 01;36
+#.midi 01;36
+#.mka 01;36
+#.mp3 01;36
+#.mpc 01;36
+#.ogg 01;36
+#.ra 01;36
+#.tta 01;36
+#.tak 01;36
+#.wav 01;36
+#.oga 01;36
+#.opus 01;36
+#.spx 01;36
+#.xspf 01;36
