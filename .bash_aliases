@@ -18,15 +18,29 @@ alias du='du -h'
 alias df='df -h'
 alias j='jobs -l'
 
-# zshの場合のみ、sudoの後のコマンドでエイリアスを有効にする
-case "$SHELL" in
-  *zsh) alias sudo='sudo ';;
-esac
-
-# グローバルエイリアス
-alias -g L='| less'
-alias -g G='| grep'
-
 # tmux関連
 alias t='tmux-attach'
 alias tl='tmux-list-all'
+
+##### ----- zsh ONLY ----- #####
+case "$SHELL" in
+  *zsh) # sudoの後のコマンドでエイリアスを有効にする
+        alias sudo='sudo '
+        ##
+        # global alias
+        alias -g A='| awk'
+        alias -g H='| head'
+        alias -g L='| less'
+        alias -g G='| grep'
+        alias -g T='| tail'
+        alias -g X='| xargs'
+        ##
+        # suffix alias
+        # 解凍系（./hoge.tar.gz で展開できる）
+        alias -s gz='tar -xzvf'
+        alias -s bz2='tar -jxvf'
+        alias -s xz='tar -Jxvf'
+        alias -s tar='tar -xvf'
+        alias -s zip='unar'
+        ;;
+esac
