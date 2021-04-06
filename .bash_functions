@@ -20,8 +20,6 @@ function mkcd() {
   fi
 }
 
-export -f mkcd
-
 # tmux-attach [sesssion_name] => tmuxのセッションに接続する
 function tmux-attach() {
   if [ "$1" != "" ]; then
@@ -30,8 +28,6 @@ function tmux-attach() {
     tmux attach-session 2>/dev/null || tmux
   fi
 }
-
-export -f tmux-attach
 
 # tmux-list-all => tmuxで稼働中のセッションについて、window, paneの詳細情報も含めて表示する
 function tmux-list-all() {
@@ -46,8 +42,6 @@ function tmux-list-all() {
             done
       done
 }
-
-export -f tmux-list-all
 
 # kill-session => SSHなどで強制切断されて残ってしまったセッションをkillする
 function kill-session() {
@@ -71,8 +65,6 @@ function kill-session() {
   done
 }
 
-export -f kill-session
-
 # png2jpg [resize] => Convert from png format to jpg format
 function png2jpg() {
   if type mogrify >& /dev/null; then
@@ -88,8 +80,6 @@ function png2jpg() {
     echo "Please install imagemagick"
   fi
 }
-
-export -f png2jpg
 
 # img2pdf => 画像ファイルの入ったフォルダ群を画像pdfファイルに変換する
 function img2pdf() {
@@ -112,6 +102,4 @@ function img2pdf() {
     echo "Plese install imagemagick and exiftool"
   fi
 }
-
-export -f img2pdf
 
