@@ -225,8 +225,8 @@ fi
 ########################################
 # 関数設定
 ########################################
-if [ -f ${HOME}/.bash_functions ]; then
-    source ${HOME}/.bash_functions
+if [ -f ${HOME}/.functions.sh ]; then
+    source ${HOME}/.functions.sh
 fi
 
 

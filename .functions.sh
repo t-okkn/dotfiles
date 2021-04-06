@@ -1,10 +1,11 @@
-##### ~/.bash_functions #####
+#!/usr/bin/bash
+##### ~/.functions.sh #####
 
 ########################################
 # My Functions
 ########################################
 # mkcd path => ディレクトリの作成と対象ディレクトリの移動を同時に行う
-function mkcd() {
+function mkcd () {
   if [ "$1" != "" ]; then
     if [ ! -d $1 ]; then
       # フォルダが存在しなければ作成して移動
@@ -21,7 +22,7 @@ function mkcd() {
 }
 
 # tmux-attach [sesssion_name] => tmuxのセッションに接続する
-function tmux-attach() {
+function tmux-attach () {
   if [ "$1" != "" ]; then
     tmux attach-session -t $1 2>/dev/null || tmux new-session -s $1
   else
@@ -30,7 +31,7 @@ function tmux-attach() {
 }
 
 # tmux-list-all => tmuxで稼働中のセッションについて、window, paneの詳細情報も含めて表示する
-function tmux-list-all() {
+function tmux-list-all () {
   tmux list-sessions -F '#{session_id} [name: #{session_name}] [created: #{t:session_created}] #{?session_attached,* attached,-}' \
     | sort | while read s t; do
         echo $s $t
@@ -44,7 +45,7 @@ function tmux-list-all() {
 }
 
 # kill-session => SSHなどで強制切断されて残ってしまったセッションをkillする
-function kill-session() {
+function kill-session () {
   # tmuxで使用中の端末デバイスを取得
   local tmux_pts=$(tmux list-panes -a -F "#{pane_tty}" 2>/dev/null | sed 's/\/dev\///')
 
@@ -66,7 +67,7 @@ function kill-session() {
 }
 
 # png2jpg [resize] => Convert from png format to jpg format
-function png2jpg() {
+function png2jpg () {
   if type mogrify >& /dev/null; then
     local resize="100%"
 
@@ -82,7 +83,7 @@ function png2jpg() {
 }
 
 # img2pdf => 画像ファイルの入ったフォルダ群を画像pdfファイルに変換する
-function img2pdf() {
+function img2pdf () {
   if type convert >& /dev/null && type exiftool >& /dev/null; then
 
     find ./ -mindepth 1 -maxdepth 1 -type d -print | while read i; do
