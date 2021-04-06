@@ -1,4 +1,4 @@
-##### ~/.zprofile #####
+##### ~/.bash_profile #####
 
 #######################################
 # 環境変数設定
@@ -44,9 +44,17 @@ fi
 
 export SOURCE_SSH_CONNECTION
 
+# Bashが動作していれば、[.bashrc]を読み込み
+if [ -n "$BASH_VERSION" ]; then
+  # [.bashrc]の存在確認
+  if [ -f "$HOME/.bashrc" ]; then
+    source "$HOME/.bashrc"
+  fi
+fi
+
 # PATHに[$HOME/.bin]を追加
-if [ -d $HOME/.bin ]; then
-  PATH=$PATH:$HOME/.bin
+if [ -d "$HOME/.bin" ]; then
+  PATH="$PATH:$HOME/.bin"
 fi
 
 # GO言語モジュール導入用
