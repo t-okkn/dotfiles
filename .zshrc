@@ -133,11 +133,12 @@ autoload -Uz add-zsh-hook
 # is-at-least でバージョン比較を行えるようにする
 autoload -Uz is-at-least
 
-# 以下の3つのメッセージをエクスポートする
-#  $vcs_info_msg_0_ : 通常メッセージ用 (緑)
-#  $vcs_info_msg_1_ : 警告メッセージ用 (黄色)
-#  $vcs_info_msg_2_ : エラーメッセージ用 (赤)
-zstyle ':vcs_info:*' max-exports 3
+# 以下の4つのメッセージをエクスポートする
+#  $vcs_info_msg_0_ : vcs情報・branch情報 (緑)
+#  $vcs_info_msg_1_ : ステージング情報 (カスタム)
+#  $vcs_info_msg_2_ : 警告メッセージ用 (黄色)
+#  $vcs_info_msg_3_ : エラーメッセージ用 (赤)
+zstyle ':vcs_info:*' max-exports 4
 
 # Git, SVN, Mercurial でのみ vcs_info を有効化
 zstyle ':vcs_info:*' enable git svn hg
@@ -145,17 +146,16 @@ zstyle ':vcs_info:*' enable git svn hg
 # 標準フォーマット（git 以外で使用）
 # misc(%m) は通常は空文字列に置き換えられる
 zstyle ':vcs_info:*' formats '(%s)-[%b]'
-zstyle ':vcs_info:*' actionformats '(%s)-[%b]' '%m' '<%a>'
+zstyle ':vcs_info:*' actionformats '(%s)-[%b]' '%F{yellow}%c%F{red}%u%f' '%m' '<%a>'
 zstyle ':vcs_info:(svn|hg):*' branchformat '%b:r%r'
 
 if is-at-least 4.3.10; then
   # git 用のフォーマット
-  # git のときはステージしているかどうかを表示
   zstyle ':vcs_info:git:*' check-for-changes true
-  zstyle ':vcs_info:git:*' stagedstr "="    # %c で表示する文字列
-  zstyle ':vcs_info:git:*' unstagedstr "!"  # %u で表示する文字列
-  zstyle ':vcs_info:git:*' formats '[%b]' '%c%u %m'
-  zstyle ':vcs_info:git:*' actionformats '[%b]' '%c%u %m' '<%a!>'
+  zstyle ':vcs_info:git:*' stagedstr "%F{yellow}="  # %c で表示する文字列
+  zstyle ':vcs_info:git:*' unstagedstr "%F{red}!"   # %u で表示する文字列
+  zstyle ':vcs_info:git:*' formats '[%b]' '%c%u%f' '%m'
+  zstyle ':vcs_info:git:*' actionformats '[%b]' '%c%u%f' '%m' '<%a!>'
 fi
 
 # hooks 設定
@@ -163,8 +163,8 @@ if is-at-least 4.3.11; then
   # git のときは hook 関数を設定する
 
   # formats, actionformats のメッセージを設定する直前のフック関数
-  # formats の時は2つ、actionformats の時は3つメッセージがあるので
-  # 各関数が最大3回呼び出される
+  # formats の時は3つ、actionformats の時は4つメッセージがあるので
+  # 各関数が最大4回呼び出される
   zstyle ':vcs_info:git+set-message:*' hooks \
                                        git-hook-begin \
                                        git-untracked \
@@ -194,12 +194,13 @@ if is-at-least 4.3.11; then
       return 0
     fi
 
-    if command git status --porcelain 2> /dev/null \
-        | awk '{print $1}' \
-        | command grep -F '??' 2>&1 /dev/null; then
+    local untracked=$(command git status --porcelain 2> /dev/null \
+        | command grep -F '??' &> /dev/null \
+        | wc -l)
 
+    if [ "$untracked" -gt 0 ]; then
       # unstaged (%u) に追加
-      hook_com[unstaged]+="?"
+      hook_com[unstaged]+="%F{yellow}?"
     fi
   }
 
@@ -207,8 +208,8 @@ if is-at-least 4.3.11; then
   #  リモートリポジトリに push していないコミットの件数を
   #  pN という形式で misc (%m) に表示する
   function +vi-git-push-status() {
-    # zstyle formats, actionformats の2番目のメッセージのみ対象にする
-    if [ "$1" != "1" ]; then
+    # zstyle formats, actionformats の3番目のメッセージのみ対象にする
+    if [ "$1" != "2" ]; then
       return 0
     fi
 
@@ -224,9 +225,7 @@ if is-at-least 4.3.11; then
     command git rev-list --max-count=1 ${default} &> /dev/null || local default="master"
 
     # push していないコミット数を取得する
-    local ahead=$(command git rev-list origin/${default}..${default} 2> /dev/null \
-        | wc -l \
-        | tr -d ' ')
+    local ahead=$(command git rev-list origin/${default}..${default} 2> /dev/null | wc -l)
 
     if [ "$ahead" -gt 0 ]; then
       # misc (%m) に追加
@@ -239,8 +238,8 @@ if is-at-least 4.3.11; then
   #  現在のブランチ上でまだ master, main にマージしていないコミットの件数を
   #  (mN) という形式で misc (%m) に表示
   function +vi-git-nomerge-branch() {
-    # zstyle formats, actionformats の2番目のメッセージのみ対象にする
-    if [ "$1" != "1" ]; then
+    # zstyle formats, actionformats の3番目のメッセージのみ対象にする
+    if [ "$1" != "2" ]; then
       return 0
     fi
 
@@ -255,9 +254,7 @@ if is-at-least 4.3.11; then
     local default="main"
     command git rev-list --max-count=1 ${default} &> /dev/null || local default="master"
 
-    local nomerged=$(command git rev-list ${default}..${hook_com[branch]} 2> /dev/null \
-        | wc -l \
-        | tr -d ' ')
+    local nomerged=$(command git rev-list ${default}..${hook_com[branch]} 2> /dev/null | wc -l)
 
     if [ "$nomerged" -gt 0 ]; then
       # misc (%m) に追加
@@ -273,7 +270,7 @@ if is-at-least 4.3.11; then
       return 0
     fi
 
-    local stash=$(command git stash list 2> /dev/null | wc -l | tr -d ' ')
+    local stash=$(command git stash list 2> /dev/null | wc -l)
 
     if [ "$stash" -gt 0 ]; then
       # misc (%m) に追加
@@ -293,11 +290,14 @@ function _update_vcs_info_msg() {
 
   else
     # vcs_info で情報を取得した場合
-    # $vcs_info_msg_0_, $vcs_info_msg_1_, $vcs_info_msg_2_ を
-    # それぞれ緑、黄色、赤で表示する
+    # $vcs_info_msg_0_, $vcs_info_msg_1_, $vcs_info_msg_2_, $vcs_info_msg_3_ を
+    # それぞれ緑、色変更なし、黄色、赤で表示する
     [ "$vcs_info_msg_0_" != "" ] && msg="%F{green}${vcs_info_msg_0_}%f"
-    [ "$vcs_info_msg_1_" != "" ] && msg="${msg} %F{yellow}${vcs_info_msg_1_}%f"
-    [ "$vcs_info_msg_2_" != "" ] && msg="${msg} %F{red}${vcs_info_msg_2_}%f"
+    [ "$vcs_info_msg_1_" != "" ] && msg="${msg}${vcs_info_msg_1_}"
+    [ "$vcs_info_msg_2_" != "" ] && msg="${msg} %F{yellow}${vcs_info_msg_2_}%f"
+    [ "$vcs_info_msg_3_" != "" ] && msg="${msg} %F{red}${vcs_info_msg_3_}%f"
+
+    msg="${msg} "
   fi
 
   RPROMPT="${msg}${return_color}return:[%?]%{${reset_color}%}"
