@@ -152,10 +152,10 @@ if is-at-least 4.3.10; then
   # git 用のフォーマット
   # git のときはステージしているかどうかを表示
   zstyle ':vcs_info:git:*' check-for-changes true
-  zstyle ':vcs_info:git:*' stagedstr "!"            # %c で表示する文字列
-  zstyle ':vcs_info:git:*' unstagedstr "%F{red}+"   # %u で表示する文字列
+  zstyle ':vcs_info:git:*' stagedstr "="    # %c で表示する文字列
+  zstyle ':vcs_info:git:*' unstagedstr "!"  # %u で表示する文字列
   zstyle ':vcs_info:git:*' formats '[%b]' '%c%u %m'
-  zstyle ':vcs_info:git:*' actionformats '[%b]' '%c%u %m' '<!%a!>'
+  zstyle ':vcs_info:git:*' actionformats '[%b]' '%c%u %m' '<%a!>'
 fi
 
 # hooks 設定
@@ -199,7 +199,7 @@ if is-at-least 4.3.11; then
         | command grep -F '??' 2>&1 /dev/null; then
 
       # unstaged (%u) に追加
-      hook_com[unstaged]+="%F{red}?"
+      hook_com[unstaged]+="?"
     fi
   }
 
@@ -269,44 +269,38 @@ if is-at-least 4.3.11; then
   #  stash している場合は :SN という形式で misc (%m) に表示
   function +vi-git-stash-count() {
     # zstyle formats, actionformats の2番目のメッセージのみ対象にする
-    if [ "$1" != "1"]]; then
+    if [ "$1" != "1" ]; then
       return 0
     fi
 
     local stash=$(command git stash list 2> /dev/null | wc -l | tr -d ' ')
 
-    if [ "${stash}" -gt 0 ]; then
+    if [ "$stash" -gt 0 ]; then
       # misc (%m) に追加
       hook_com[misc]+=":S${stash}"
     fi
   }
-
 fi
 
 # hook用関数
 function _update_vcs_info_msg() {
-  local -a messages
-  local prompt
-
   LANG=en_US.UTF-8 vcs_info
+  local msg
 
   if [ "$vcs_info_msg_0_" = "" ]; then
     # vcs_info で何も取得していない場合はプロンプトを表示しない
-    prompt=""
+    msg=""
 
   else
     # vcs_info で情報を取得した場合
     # $vcs_info_msg_0_, $vcs_info_msg_1_, $vcs_info_msg_2_ を
     # それぞれ緑、黄色、赤で表示する
-    [ "$vcs_info_msg_0_" != "" ] && messages+=( "%F{green}${vcs_info_msg_0_}%f" )
-    [ "$vcs_info_msg_1_" != "" ] && messages+=( "%F{yellow}${vcs_info_msg_1_}%f" )
-    [ "$vcs_info_msg_2_" != "" ] && messages+=( "%F{red}${vcs_info_msg_2_}%f" )
-
-    # 間にスペースを入れて連結する
-    prompt="${(j: :)messages} "
+    [ "$vcs_info_msg_0_" != "" ] && msg="%F{green}${vcs_info_msg_0_}%f"
+    [ "$vcs_info_msg_1_" != "" ] && msg="${msg} %F{yellow}${vcs_info_msg_1_}%f"
+    [ "$vcs_info_msg_2_" != "" ] && msg="${msg} %F{red}${vcs_info_msg_2_}%f"
   fi
 
-  RPROMPT="${prompt}${return_color}return:[%?]%{${reset_color}%}"
+  RPROMPT="${msg}${return_color}return:[%?]%{${reset_color}%}"
 }
 
 add-zsh-hook precmd _update_vcs_info_msg
