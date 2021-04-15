@@ -6,6 +6,9 @@
 # Emacs 風キーバインドにする
 bindkey -e
 
+# コマンドの実行にx秒以上時間がかかった場合、システム使用レポートを出力
+REPORTTIME=5
+
 # ヒストリの設定
 HISTFILE=${HOME}/.zsh_history
 HISTSIZE=20000
@@ -82,9 +85,6 @@ zstyle ':completion:*:default' menu select=1
 ########################################
 # プロンプト系の設定
 ########################################
-autoload -Uz add-zsh-hook
-autoload -Uz vcs_info
-
 # promptinitでの設定の場合
 # autoload -Uz promptinit && promptinit
 # prompt adam1 とか
@@ -121,9 +121,18 @@ RPROMPT="${return_color}return:[%?]%{${reset_color}%}"
 
 ########################################
 # vcs_info（バージョン管理システム情報）
-########################################
-# 参照）https://qiita.com/mollifier/items/8d5a627d773758dd8078
 #
+# 参照）https://qiita.com/mollifier/items/8d5a627d773758dd8078
+########################################
+# vcs_info 機能を有効にする
+autoload -Uz vcs_info
+
+# hook関数機能を有効にする
+autoload -Uz add-zsh-hook
+
+# is-at-least でバージョン比較を行えるようにする
+autoload -Uz is-at-least
+
 # 以下の3つのメッセージをエクスポートする
 #  $vcs_info_msg_0_ : 通常メッセージ用 (緑)
 #  $vcs_info_msg_1_ : 警告メッセージ用 (黄色)
