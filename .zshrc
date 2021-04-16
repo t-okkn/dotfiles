@@ -402,8 +402,8 @@ fi
 ########################################
 # 関数設定
 ########################################
-if [ -f ${HOME}/.functions.sh ]; then
-    source ${HOME}/.functions.sh
+if [ -f ${DOTFILES_EXTRA}/functions.sh ]; then
+    source ${DOTFILES_EXTRA}/functions.sh
 fi
 
 

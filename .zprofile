@@ -44,10 +44,12 @@ fi
 
 export SOURCE_SSH_CONNECTION
 
+# dotfiles関連の環境変数
+export DOTFILES=$HOME/.dotfiles
+[ -d $HOME/.extra.d ] && export DOTFILES_EXTRA=$HOME/.extra.d
+
 # PATHに[$HOME/.bin]を追加
-if [ -d $HOME/.bin ]; then
-  PATH=$PATH:$HOME/.bin
-fi
+[ -d $HOME/.bin ] && PATH=$PATH:$HOME/.bin
 
 # GO言語モジュール導入用
 export GO111MODULE=on
