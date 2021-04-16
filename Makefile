@@ -5,7 +5,7 @@ DOTFILES   := $(filter-out $(EXCLUSIONS), $(CANDIDATES))
 
 THISYEAR := $(shell date "+%Y")
 
-list: ## Show dotfiles in this repo
+list: ## Show dotfiles in this repository
 	@$(foreach val, $(DOTFILES), /bin/ls -dF $(val);)
 
 install: ## Create symlink to home directory
@@ -34,6 +34,5 @@ reinstall: clean ## Reinstall the dotfiles
 
 help: ## Self-documented Makefile
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
-		| sort \
-		| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+		| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-12s\033[0m %s\n", $$1, $$2}'
 
