@@ -237,28 +237,40 @@ export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quo
 function make_ps1 () {
   # 変数の設定
   # chroot環境を示すIDが存在すればプロンプトに表示する
-  if [ -z "${chroot_env:-}" ] && [ -r /etc/chroot_env ]; then
-    chroot_env=$(cat /etc/chroot_env)
+  if [ -z "${chroot_env:-}" ] && [ -r ${HOME}/.chroot_env ]; then
+    chroot_env=$(cat ${HOME}/.chroot_env)
   fi
 
   # UserColor
   # rootは205（ピンク系）、それ以外は045（明るめの青）
   if [ $(id -u) -eq 0 ]; then
-    local p_user="\[\033[38;5;205m\]\u\[\033[00m\]"
+    local p_user="\[\e[38;5;205m\]\u\[\e[00m\]"
   else
-    local p_user="\[\033[38;5;045m\]\u\[\033[00m\]"
+    local p_user="\[\e[38;5;045m\]\u\[\e[00m\]"
   fi
 
   # HostNameColor
   case ${SOURCE_SSH_CONNECTION##*,} in
-    0) local p_host="\[\033[38;5;015m\]\h\[\033[00m\]" ;;
-    1) local p_host="\[\033[38;5;156m\]\h\[\033[00m\]" ;;
-    2) local p_host="\[\033[38;5;220m\]\h\[\033[00m\]" ;;
-    3) local p_host="\[\033[38;5;218m\]\h\[\033[00m\]" ;;
-    *) local p_host="\[\033[38;5;218m\]\[\033[48;5;197m\]\h !!TOO MANY CASCADE CONNECTION!!\[\033[00m\]" ;;
+    0) local p_host="\[\e[38;5;015m\]\h\[\e[00m\]" ;;
+    1) local p_host="\[\e[38;5;156m\]\h\[\e[00m\]" ;;
+    2) local p_host="\[\e[38;5;220m\]\h\[\e[00m\]" ;;
+    3) local p_host="\[\e[38;5;218m\]\h\[\e[00m\]" ;;
+    *) local p_host="\[\e[38;5;218m\]\[\e[48;5;197m\]\h !!TOO MANY CASCADE CONNECTION!!\[\e[00m\]" ;;
   esac
 
-  echo "\n${chroot_env:+($chroot_env)}[${p_user}@${p_host}] \[\033[36m\]\w\[\033[00m\]\n\$ "
+  # 前回実行コマンドの終了ステータスコードの表示
+  # PS1に入るまではコマンドとして保持し、PS1で戻り値とその値に応じた色を展開する
+  local p_return="\$(status="\$?";"
+  p_return="${p_return} if [ \$status -eq 0 ];"
+  p_return="${p_return} then echo \"\[\e[36m\]r:\$status\[\e[00m\]\";"
+  p_return="${p_return} else echo \"\[\e[35m\]r:\$status\[\e[00m\]\";"
+  p_return="${p_return} fi)"
+
+  # Directory
+  local p_dir="\[\e[36m\]\w\[\e[00m\]"
+  # gitのbranch表示をしたいかも・・・
+
+  echo "\n${chroot_env:+($chroot_env)}[${p_user}@${p_host}]-(${p_return}) ${p_dir}\n\$ "
 }
 
 PS1=$(make_ps1)
