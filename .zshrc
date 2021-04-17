@@ -351,6 +351,7 @@ if is-at-least 4.3.11; then
     local nomerged=$(command git rev-list ${default}..${hook_com[branch]} 2> /dev/null | wc -l)
 
     if [ "$nomerged" -gt 0 ]; then
+      # (pN) が存在するか確認
       local c="$(echo ${hook_com[misc]} | grep -E '(\(p[0-9]+\))$' &> /dev/null && echo ok)"
 
       # misc (%m) に追加
@@ -358,7 +359,7 @@ if is-at-least 4.3.11; then
         hook_com[misc]="${hook_com[misc]%*)}, m${nomerged})"
 
       elif [ "${hook_com[misc]}" != "" ]; then
-        hook_com[misc]="${hook_com[misc]} m${nomerged})"
+        hook_com[misc]="${hook_com[misc]} (m${nomerged})"
 
       else
         hook_com[misc]="(m${nomerged})"
