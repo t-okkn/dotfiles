@@ -224,14 +224,14 @@ zstyle ':vcs_info:*' enable git svn hg
 # 標準フォーマット（git 以外で使用）
 # misc(%m) は通常は空文字列に置き換えられる
 zstyle ':vcs_info:*' formats '(%s)-[%b]'
-zstyle ':vcs_info:*' actionformats '(%s)-[%b]' '%F{yellow}%c%F{009}%u%f' '%m' '<%a>'
+zstyle ':vcs_info:*' actionformats '(%s)-[%b]' '%F{yellow}%c%F{red}%u%f' '%m' '<%a>'
 zstyle ':vcs_info:(svn|hg):*' branchformat '%b:r%r'
 
 if is-at-least 4.3.10; then
   # git 用のフォーマット
   zstyle ':vcs_info:git:*' check-for-changes true
   zstyle ':vcs_info:git:*' stagedstr "%F{yellow}+"  # %c で表示する文字列
-  zstyle ':vcs_info:git:*' unstagedstr "%F{009}!"   # %u で表示する文字列
+  zstyle ':vcs_info:git:*' unstagedstr "%F{red}!"   # %u で表示する文字列
   zstyle ':vcs_info:git:*' formats '[%b]' '%c%u' '%m'
   zstyle ':vcs_info:git:*' actionformats '[%b]' '%c%u' '%m' '<%a!>'
 fi
@@ -278,7 +278,7 @@ if is-at-least 4.3.11; then
 
     if [ "$untracked" -gt 0 ]; then
       # unstaged (%u) に追加
-      hook_com[unstaged]+="%F{012}?"
+      hook_com[unstaged]+="%F{cyan}?"
     fi
   }
 
@@ -296,9 +296,9 @@ if is-at-least 4.3.11; then
 
       # unstaged (%u) に追加
       if [ "${hook_com[unstaged]}" != "" ]; then
-        hook_com[unstaged]="${hook_com[unstaged]}%F{010}:S${stash}"
+        hook_com[unstaged]="${hook_com[unstaged]}%F{green}:S${stash}"
       else
-        hook_com[unstaged]="%F{010}S${stash}"
+        hook_com[unstaged]="%F{green}S${stash}"
       fi
     fi
   }
@@ -383,18 +383,18 @@ function precmd() {
   # User
   # rootは205（ピンク系）、それ以外は045（明るめの青）
   if [ $(id -u) -eq 0 ]; then
-    local p_user="%F{205}%n%f"
+    local p_user="%{\e[38;5;205m%}%n%{\e[00m%}"
   else
-    local p_user="%F{045}%n%f"
+    local p_user="%{\e[38;5;045m%}%n%{\e[00m%}"
   fi
 
   # HostName
   case ${SOURCE_SSH_CONNECTION##*,} in
-    0) local p_host="%F{015}%m%f" ;;
-    1) local p_host="%F{156}%m%f" ;;
-    2) local p_host="%F{220}%m%f" ;;
-    3) local p_host="%F{218}%m%f" ;;
-    *) local p_host="%F{218}%K{197}%m !!TOO MANY CASCADE CONNECTION!!%k%f" ;;
+    0) local p_host="%{\e[38;5;015m%}%m%{\e[00m%}" ;;
+    1) local p_host="%{\e[38;5;156m%}%m%{\e[00m%}" ;;
+    2) local p_host="%{\e[38;5;220m%}%m%{\e[00m%}" ;;
+    3) local p_host="%{\e[38;5;218m%}%m%{\e[00m%}" ;;
+    *) local p_host="%{\e[38;5;218m%}%{\e[48;5;197m%}%m !!TOO MANY CASCADE CONNECTION!!%{\e[00m%}" ;;
   esac
 
   # Directory
@@ -417,10 +417,10 @@ function precmd() {
     # vcs_info で情報を取得した場合
     # $vcs_info_msg_0_, $vcs_info_msg_1_, $vcs_info_msg_2_, $vcs_info_msg_3_ を
     # それぞれ緑、色変更なし、黄色、赤で表示する
-    [ "$vcs_info_msg_0_" != "" ] && right="%F{010}${vcs_info_msg_0_}%f"
-    [ "$vcs_info_msg_1_" != "" ] && right="${right%*]*}|${vcs_info_msg_1_}%F{010}]%f"
+    [ "$vcs_info_msg_0_" != "" ] && right="%F{green}${vcs_info_msg_0_}%f"
+    [ "$vcs_info_msg_1_" != "" ] && right="${right%*]*}|${vcs_info_msg_1_}%F{green}]%f"
     [ "$vcs_info_msg_2_" != "" ] && right="${right} %F{yellow}${vcs_info_msg_2_}%f"
-    [ "$vcs_info_msg_3_" != "" ] && right="${right} %F{009}${vcs_info_msg_3_}%f"
+    [ "$vcs_info_msg_3_" != "" ] && right="${right} %F{red}${vcs_info_msg_3_}%f"
   fi
 
   if [ "$right" != "" ]; then
@@ -448,9 +448,9 @@ RPROMPT="%(?.%F{cyan}.%F{magenta})[return:%?]%f"
 
 # Googleカラーでサジェストプロンプトを表示
 if [[ $TERM == 'linux' ]]; then
-  SPROMPT=":‑/ < %{$fg[blue]%}Di%{${reset_color}%}%{$fg[red]%}d %{${reset_color}%}%{$fg[yellow]%}yo%{${reset_color}%}%{$fg[blue]%}u %{${reset_color}%}%{$fg[green]%}me%{${reset_color}%}%{$fg[red]%}an%{${reset_color}%}...; %{$fg[red]%}%r%{${reset_color}%}? [(y)es, (n)o, (a)bort, (e)dit] -> "
+  SPROMPT=":‑/ < %F{blue}Did %F{red}you %F{yellow}mean%F{green}...%f: %F{red}%r%f? [(y)es, (n)o, (a)bort, (e)dit] -> "
 else
-  SPROMPT="( ´・ω・) ＜ %{$fg[blue]%}も%{${reset_color}%}%{$fg[red]%}し%{${reset_color}%}%{$fg[yellow]%}か%{${reset_color}%}%{$fg[green]%}し%{${reset_color}%}%{$fg[red]%}て%{${reset_color}%}: %{$fg[red]%}%r%{${reset_color}%}？ [(y)es, (n)o, (a)bort, (e)dit] -> "
+  SPROMPT="( ´・ω・) ＜ %F{blue}も%F{red}し%F{yellow}か%F{green}し%F{red}て%f: %F{red}%r%f? [(y)es, (n)o, (a)bort, (e)dit] -> "
 fi
 
 
