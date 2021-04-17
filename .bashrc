@@ -304,8 +304,8 @@ fi
 ########################################
 # 関数設定
 ########################################
-if [ -f ${DOTFILES_EXTRA}/functions.sh ]; then
-    source ${DOTFILES_EXTRA}/functions.sh
+if [ -f ${DOTEXTRA_PATH}/functions.sh ]; then
+    source ${DOTEXTRA_PATH}/functions.sh
 fi
 
 

@@ -45,8 +45,8 @@ fi
 export SOURCE_SSH_CONNECTION
 
 # dotfiles関連の環境変数
-export DOTFILES=$HOME/.dotfiles
-[ -d $HOME/.extra.d ] && export DOTFILES_EXTRA=$HOME/.extra.d
+export DOTPATH=$HOME/.dotfiles
+[ -d $HOME/.extra.d ] && export DOTEXTRA_PATH=$HOME/.extra.d
 
 # PATHに[$HOME/.bin]を追加
 [ -d $HOME/.bin ] && PATH=$PATH:$HOME/.bin
