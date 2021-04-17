@@ -83,50 +83,12 @@ zstyle ':completion:*:default' menu select=1
 
 
 ########################################
-# プロンプト系の設定
-########################################
-# promptinitでの設定の場合
-# autoload -Uz promptinit && promptinit
-# prompt adam1 とか
-
-# 変数の設定
-# UserColor
-# rootは205（ピンク系）、それ以外は045（明るめの青）
-if [ $(id -u) -eq 0 ]; then
-  local p_user="%F{205}%n%f"
-else
-  local p_user="%F{045}%n%f"
-fi
-
-# HostNameColor
-case ${SOURCE_SSH_CONNECTION##*,} in
-  0) local p_host="%F{015}%m%f" ;;
-  1) local p_host="%F{156}%m%f" ;;
-  2) local p_host="%F{220}%m%f" ;;
-  3) local p_host="%F{218}%m%f" ;;
-  *) local p_host="%F{218}%K{197}%m !!TOO MANY CASCADE CONNECTION!!%k%f" ;;
-esac
-
-# 左側のプロンプト
-PROMPT=$'\n'"[${p_user}@${p_host}] %F{cyan}%~%f"$'\n'"%(!.#.$) "
-
-# 直前に実行したコマンドの戻り値が { 0 -> cyan; 0以外 -> magenta }
-local p_return="%(?.%F{cyan}.%F{magenta})[return:%?]%f"
-
-# 右側のプロンプト
-RPROMPT="${p_return}"
-
-
-########################################
 # vcs_info（バージョン管理システム情報）
 #
 # 参照）https://qiita.com/mollifier/items/8d5a627d773758dd8078
 ########################################
 # vcs_info 機能を有効にする
 autoload -Uz vcs_info
-
-# hook関数機能を有効にする
-autoload -Uz add-zsh-hook
 
 # is-at-least でバージョン比較を行えるようにする
 autoload -Uz is-at-least
@@ -277,31 +239,82 @@ if is-at-least 4.3.11; then
   }
 fi
 
-# hook用関数
-function _update_vcs_info_msg() {
+
+########################################
+# プロンプト系の設定
+########################################
+# promptinitでの設定の場合
+# autoload -Uz promptinit && promptinit
+# prompt adam1 とか
+
+function precmd() {
+  # 1行空ける
+  print
+
+  # User
+  # rootは205（ピンク系）、それ以外は045（明るめの青）
+  if [ $(id -u) -eq 0 ]; then
+    local p_user="%F{205}%n%f"
+  else
+    local p_user="%F{045}%n%f"
+  fi
+
+  # HostName
+  case ${SOURCE_SSH_CONNECTION##*,} in
+    0) local p_host="%F{015}%m%f" ;;
+    1) local p_host="%F{156}%m%f" ;;
+    2) local p_host="%F{220}%m%f" ;;
+    3) local p_host="%F{218}%m%f" ;;
+    *) local p_host="%F{218}%K{197}%m !!TOO MANY CASCADE CONNECTION!!%k%f" ;;
+  esac
+
+  # Directory
+  local p_dir="%F{cyan}%~%f"
+
+  # 左側プロンプト
+  local left="[${p_user}@${p_host}] ${p_dir}"
+
+  # vcs_infoの実行
   LANG=en_US.UTF-8 vcs_info
-  local msg
+
+  # 右側プロンプト
+  local right
 
   if [ "$vcs_info_msg_0_" = "" ]; then
     # vcs_info で何も取得していない場合はプロンプトを表示しない
-    msg=""
+    right=""
 
   else
     # vcs_info で情報を取得した場合
     # $vcs_info_msg_0_, $vcs_info_msg_1_, $vcs_info_msg_2_, $vcs_info_msg_3_ を
     # それぞれ緑、色変更なし、黄色、赤で表示する
-    [ "$vcs_info_msg_0_" != "" ] && msg="%F{010}${vcs_info_msg_0_}%f"
-    [ "$vcs_info_msg_1_" != "" ] && msg="${msg%*]*}|${vcs_info_msg_1_}%F{010}]%f"
-    [ "$vcs_info_msg_2_" != "" ] && msg="${msg} %F{yellow}${vcs_info_msg_2_}%f"
-    [ "$vcs_info_msg_3_" != "" ] && msg="${msg} %F{009}${vcs_info_msg_3_}%f"
-
-    msg="${msg} "
+    [ "$vcs_info_msg_0_" != "" ] && right="%F{010}${vcs_info_msg_0_}%f"
+    [ "$vcs_info_msg_1_" != "" ] && right="${right%*]*}|${vcs_info_msg_1_}%F{010}]%f"
+    [ "$vcs_info_msg_2_" != "" ] && right="${right} %F{yellow}${vcs_info_msg_2_}%f"
+    [ "$vcs_info_msg_3_" != "" ] && right="${right} %F{009}${vcs_info_msg_3_}%f"
   fi
 
-  RPROMPT="${msg}${p_return}"
+  if [ "$right" != "" ]; then
+    # スペースの長さを計算
+    # テキストを装飾する場合、エスケープシーケンスをカウントしないようにする
+    local invisible='%([BSUbfksu]|([FK]|){*})'
+    local leftwidth=${#${(S%%)left//$~invisible/}}
+    local rightwidth=${#${(S%%)right//$~invisible/}}
+    local padwidth=$(($COLUMNS - ($leftwidth + $rightwidth) % $COLUMNS))
+
+    print -P $left${(r:$padwidth:: :)}$right
+
+  else
+    print -P $left
+  fi
 }
 
-add-zsh-hook precmd _update_vcs_info_msg
+# 左側のプロンプト
+PROMPT="%(!.#.$) "
+
+# 右側のプロンプト
+# 直前に実行したコマンドの戻り値が { 0 -> cyan; 0以外 -> magenta }
+RPROMPT="%(?.%F{cyan}.%F{magenta})[return:%?]%f"
 
 
 ########################################
