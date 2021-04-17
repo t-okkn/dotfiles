@@ -3,25 +3,94 @@
 ########################################
 # 環境設定
 ########################################
+# インタラクティブモードで動作していなければ、何もしない
+case $- in
+  *i*) ;;
+    *) return;;
+esac
+
 # Emacs 風キーバインドにする
 bindkey -e
 
 # コマンドの実行にx秒以上時間がかかった場合、システム使用レポートを出力
 REPORTTIME=5
 
-# ヒストリの設定
+
+########################################
+# ヒストリ設定
+########################################
+# ヒストリファイル
 HISTFILE=${HOME}/.zsh_history
+
+# サイズ設定
 HISTSIZE=20000
 SAVEHIST=20000
 
-# 単語の区切り文字を指定する
-autoload -Uz select-word-style
-select-word-style default
+# [$HISTFILE] に時間も記録
+setopt extended_history
 
-# ここで指定した文字は単語区切りとみなされる
-# / も区切りと扱うので、^W でディレクトリ１つ分を削除できる
-zstyle ':zle:*' word-chars " /=;@:{},|"
-zstyle ':zle:*' word-style unspecified
+# 直前と同じコマンドの場合は履歴に追加しない
+setopt hist_ignore_dups
+
+# ヒストリに追加されるコマンド行が古いものと同じなら古いものを削除
+setopt hist_ignore_all_dups
+
+# ヒストリファイルに保存するとき、古いコマンドと同じなら無視
+setopt hist_save_no_dups
+
+# スペースで始まるコマンド行はヒストリリストから削除
+setopt hist_ignore_space
+
+# ヒストリを呼び出してから実行する間に一旦編集可能
+setopt hist_verify
+
+# 余分な空白は詰めて記録
+setopt hist_reduce_blanks
+
+# historyコマンドは履歴に登録しない
+setopt hist_no_store
+
+# 補完時にヒストリを自動的に展開
+setopt hist_expand
+
+# 履歴をインクリメンタルに追加
+setopt inc_append_history
+
+# 同時に起動したzshの間でヒストリを共有する
+setopt share_history
+
+# 履歴検索系のキーバインドを入れ替えるために、キーバインドの割当を解除
+bindkey -r "^N"
+bindkey -r "^P"
+bindkey -r "^R"
+bindkey -r "^S"
+
+# ^R, ^S で履歴検索をすると、既に打ち込んだコマンドに前方一致するコマンドのみを
+# 結果として返すようにする
+# （コマンド履歴検索モードに突入しない）
+autoload history-search-end
+zle -N history-beginning-search-backward-end history-search-end
+zle -N history-beginning-search-forward-end history-search-end
+bindkey "^R" history-beginning-search-backward-end
+bindkey "^S" history-beginning-search-forward-end
+
+# ^P, ^N で履歴検索をするときに * でワイルドカードを使用出来るようにする
+# （コマンド履歴検索モードに突入する）
+bindkey '^P' history-incremental-pattern-search-backward
+bindkey '^N' history-incremental-pattern-search-forward
+
+
+########################################
+# cd設定
+########################################
+# ディレクトリ名だけでcdする
+setopt auto_cd
+
+# cd したら自動的にpushdする
+setopt auto_pushd
+
+# 重複したディレクトリを追加しない
+setopt pushd_ignore_dups
 
 
 ########################################
@@ -31,7 +100,7 @@ zstyle ':zle:*' word-style unspecified
 autoload -Uz colors && colors
 
 # lsの色設定
-if type dircolors >& /dev/null; then
+if type dircolors &> /dev/null; then
   if [ -r ${HOME}/.dircolors ]; then
     eval "$(dircolors -b ${HOME}/.dircolors)"
 
@@ -53,18 +122,21 @@ alias zgrep='zgrep --color=auto'
 # gccの色設定
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
+# zshの補完にもLS_COLORSと同様の色を設定する
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+
 
 ########################################
-# 補完
+# 補完、パス名展開、変数展開設定
 ########################################
 # 補完機能を有効にする
 autoload -Uz compinit && compinit
 
+# 単語の区切り文字を指定する
+autoload -Uz select-word-style && select-word-style default
+
 # 予測変換機能を有効にする
 # autoload -Uz predict-on && predict-on
-
-# zshの補完にもLS_COLORSと同様の色を設定する
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 # 補完で小文字でも大文字にマッチさせる
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
@@ -80,6 +152,52 @@ zstyle ':completion:*:processes' command 'ps x -o pid,s,args'
 
 # 補完時に自分でカーソル移動で選択可能
 zstyle ':completion:*:default' menu select=1
+
+# ここで指定した文字は単語区切りとみなされる
+# / も区切りと扱うので、^W でディレクトリ１つ分を削除できる
+zstyle ':zle:*' word-chars " /=;@:{},|"
+zstyle ':zle:*' word-style unspecified
+
+# セパレータを設定する
+zstyle ':completion:*' list-separator '-->'
+zstyle ':completion:*:manuals' separate-sections true
+
+# マッチ種別を別々に表示
+zstyle ':completion:*' group-name ''
+
+# 高機能なワイルドカード展開を使用する
+setopt extended_glob
+
+# コマンドラインの引数でも補完を有効にする（--prefix=/userなど）
+setopt magic_equal_subst
+
+# 補完候補が複数あるときに自動的に一覧表示する
+setopt auto_menu
+
+# 補完候補表示時にビープ音を鳴らさない
+setopt nolistbeep
+
+# カッコの対応などを自動的に補完
+setopt auto_param_keys
+
+
+########################################
+# その他設定
+########################################
+# 日本語ファイル名を表示可能にする
+setopt print_eight_bit
+
+# beep を無効にする
+setopt no_beep
+
+# フローコントロールを無効にする
+setopt no_flow_control
+
+# "#" 以降をコメントとして扱う
+setopt interactive_comments
+
+# コマンドのスペルミスを指摘
+setopt correct
 
 
 ########################################
@@ -317,83 +435,12 @@ PROMPT="%(!.#.$) "
 RPROMPT="%(?.%F{cyan}.%F{magenta})[return:%?]%f"
 
 
-########################################
-# オプション
-########################################
-# 開始と終了を記録
-setopt EXTENDED_HISTORY
-
-# ヒストリに追加されるコマンド行が古いものと同じなら古いものを削除
-setopt hist_ignore_all_dups
-
-# スペースで始まるコマンド行はヒストリリストから削除
-setopt hist_ignore_space
-
-# ヒストリを呼び出してから実行する間に一旦編集可能
-setopt hist_verify
-
-# 余分な空白は詰めて記録
-setopt hist_reduce_blanks
-
-# historyコマンドは履歴に登録しない
-setopt hist_no_store
-
-# 補完時にヒストリを自動的に展開
-setopt hist_expand
-
-# 履歴をインクリメンタルに追加
-setopt inc_append_history
-
-# 日本語ファイル名を表示可能にする
-setopt print_eight_bit
-
-# beep を無効にする
-setopt no_beep
-
-# フローコントロールを無効にする
-setopt no_flow_control
-
-# "#" 以降をコメントとして扱う
-setopt interactive_comments
-
-# ディレクトリ名だけでcdする
-setopt auto_cd
-
-# cd したら自動的にpushdする
-setopt auto_pushd
-
-# 重複したディレクトリを追加しない
-setopt pushd_ignore_dups
-
-# = の後はパス名として補完する
-setopt magic_equal_subst
-
-# 同時に起動したzshの間でヒストリを共有する
-setopt share_history
-
-# ヒストリファイルに保存するとき、すでに重複したコマンドがあったら古い方を削除する
-setopt hist_save_no_dups
-
-# 補完候補が複数あるときに自動的に一覧表示する
-setopt auto_menu
-
-# 高機能なワイルドカード展開を使用する
-setopt extended_glob
-
-# Googleカラーでサジェスト
-setopt correct
+# Googleカラーでサジェストプロンプトを表示
 if [[ $TERM == 'linux' ]]; then
   SPROMPT=":‑/ < %{$fg[blue]%}Di%{${reset_color}%}%{$fg[red]%}d %{${reset_color}%}%{$fg[yellow]%}yo%{${reset_color}%}%{$fg[blue]%}u %{${reset_color}%}%{$fg[green]%}me%{${reset_color}%}%{$fg[red]%}an%{${reset_color}%}...; %{$fg[red]%}%r%{${reset_color}%}? [(y)es, (n)o, (a)bort, (e)dit] -> "
 else
   SPROMPT="( ´・ω・) ＜ %{$fg[blue]%}も%{${reset_color}%}%{$fg[red]%}し%{${reset_color}%}%{$fg[yellow]%}か%{${reset_color}%}%{$fg[green]%}し%{${reset_color}%}%{$fg[red]%}て%{${reset_color}%}: %{$fg[red]%}%r%{${reset_color}%}？ [(y)es, (n)o, (a)bort, (e)dit] -> "
 fi
-
-########################################
-# キーバインド
-########################################
-# ^R, ^S で履歴検索をするときに * でワイルドカードを使用出来るようにする
-bindkey '^R' history-incremental-pattern-search-backward
-bindkey '^S' history-incremental-pattern-search-forward
 
 
 ########################################
