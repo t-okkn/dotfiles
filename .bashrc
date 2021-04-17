@@ -234,6 +234,13 @@ export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quo
 ########################################
 # プロンプト設定
 ########################################
+# git-prompt の読み込み
+if [ -f /etc/bash_completion.d/git-prompt ]; then
+  source /etc/bash_completion.d/git-prompt
+elif [ -f ${DOTEXTRA_PATH}/git-prompt.sh ]; then
+  source ${DOTEXTRA_PATH}/git-prompt.sh
+fi
+
 function make_ps1 () {
   # 変数の設定
   # chroot環境を示すIDが存在すればプロンプトに表示する
@@ -267,8 +274,18 @@ function make_ps1 () {
   p_return="${p_return} fi)"
 
   # Directory
-  local p_dir="\[\e[36m\]\w\[\e[00m\]"
-  # gitのbranch表示をしたいかも・・・
+  if [ -f /etc/bash_completion.d/git-prompt ] || [ -f ${DOTEXTRA_PATH}/git-prompt.sh ]; then
+    GIT_PS1_SHOWDIRTYSTATE=1
+    GIT_PS1_SHOWUPSTREAM=1
+    GIT_PS1_SHOWUNTRACKEDFILES=1
+    GIT_PS1_SHOWSTASHSTATE=1
+    GIT_PS1_COMPRESSSPARSESTATE=1
+
+    local p_dir="\[\e[36m\]\w [\e[1;32m\][$(__git_ps1)]\[\e[00m\]"
+
+  else
+    local p_dir="\[\e[36m\]\w\[\e[00m\]"
+  fi
 
   echo "\n${chroot_env:+($chroot_env)}[${p_user}@${p_host}]-(${p_return}) ${p_dir}\n\$ "
 }
