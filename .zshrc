@@ -295,10 +295,14 @@ if is-at-least 4.3.11; then
     if [ "$stash" -gt 0 ]; then
 
       # unstaged (%u) に追加
-      if [ "${hook_com[unstaged]}" != "" ]; then
-        hook_com[unstaged]="${hook_com[unstaged]}%F{green}:S${stash}"
-      else
+      if [ "${hook_com[unstaged]}" = "" ] && [ "${hook_com[staged]}" = "" ]; then
         hook_com[unstaged]="%F{green}S${stash}"
+
+      elif [ "${hook_com[unstaged]}" = "" ] && [ "${hook_com[staged]}" != "" ]; then
+        hook_com[unstaged]="%F{green}:S${stash}"
+
+      else
+        hook_com[unstaged]="${hook_com[unstaged]}%F{green}:S${stash}"
       fi
     fi
   }
