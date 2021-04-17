@@ -246,9 +246,9 @@ if is-at-least 4.3.11; then
   zstyle ':vcs_info:git+set-message:*' hooks \
                                        git-hook-begin \
                                        git-untracked \
+                                       git-stash-count \
                                        git-push-status \
-                                       git-nomerge-branch \
-                                       git-stash-count
+                                       git-nomerge-branch
 
   ## フックの最初の関数
   #  git の作業コピーのあるディレクトリのみフック関数を呼び出すようにする
@@ -282,6 +282,27 @@ if is-at-least 4.3.11; then
     fi
   }
 
+  ## stash 件数表示
+  #  stash している場合は :SN という形式で misc (%m) に表示
+  function +vi-git-stash-count() {
+    # zstyle formats, actionformats の2番目のメッセージのみ対象にする
+    if [ "$1" != "1" ]; then
+      return 0
+    fi
+
+    local stash=$(command git stash list 2> /dev/null | wc -l)
+
+    if [ "$stash" -gt 0 ]; then
+
+      # unstaged (%u) に追加
+      if [ "${hook_com[unstaged]}" != "" ]; then
+        hook_com[unstaged]="${hook_com[unstaged]}%F{010}:S${stash}"
+      else
+        hook_com[unstaged]="%F{010}S${stash}"
+      fi
+    fi
+  }
+
   ## push していないコミットの件数表示
   #  リモートリポジトリに push していないコミットの件数を
   #  pN という形式で misc (%m) に表示する
@@ -291,23 +312,18 @@ if is-at-least 4.3.11; then
       return 0
     fi
 
-    if [ "${hook_com[branch]}" != "main" ] \
-        && [ "${hook_com[branch]}" != "master" ]; then
-
-      # main, master ブランチでない場合は何もしない
-      return 0
-    fi
-
-    # main, masterの判定
-    local default="main"
-    command git rev-list --max-count=1 ${default} &> /dev/null || local default="master"
-
     # push していないコミット数を取得する
-    local ahead=$(command git rev-list origin/${default}..${default} 2> /dev/null | wc -l)
+    local ahead=$(command git rev-list origin/${hook_com[branch]}..${hook_com[branch]} 2> /dev/null \
+        | wc -l)
 
     if [ "$ahead" -gt 0 ]; then
+
       # misc (%m) に追加
-      hook_com[misc]+="(p${ahead})"
+      if [ "${hook_com[misc]}" != "" ]; then
+        hook_com[misc]="${hook_com[misc]} (p${ahead})"
+      else
+        hook_com[misc]="(p${ahead})"
+      fi
     fi
   }
 
@@ -335,24 +351,18 @@ if is-at-least 4.3.11; then
     local nomerged=$(command git rev-list ${default}..${hook_com[branch]} 2> /dev/null | wc -l)
 
     if [ "$nomerged" -gt 0 ]; then
+      local c="$(echo ${hook_com[misc]} | grep -E '(\(p[0-9]+\))$' &> /dev/null && echo ok)"
+
       # misc (%m) に追加
-      hook_com[misc]+="(m${nomerged})"
-    fi
-  }
+      if [ "${c-ng}" = "ok" ]; then
+        hook_com[misc]="${hook_com[misc]%*)}, m${nomerged})"
 
-  ## stash 件数表示
-  #  stash している場合は :SN という形式で misc (%m) に表示
-  function +vi-git-stash-count() {
-    # zstyle formats, actionformats の2番目のメッセージのみ対象にする
-    if [ "$1" != "1" ]; then
-      return 0
-    fi
+      elif [ "${hook_com[misc]}" != "" ]; then
+        hook_com[misc]="${hook_com[misc]} m${nomerged})"
 
-    local stash=$(command git stash list 2> /dev/null | wc -l)
-
-    if [ "$stash" -gt 0 ]; then
-      # misc (%m) に追加
-      hook_com[misc]+=":S${stash}"
+      else
+        hook_com[misc]="(m${nomerged})"
+      fi
     fi
   }
 fi
