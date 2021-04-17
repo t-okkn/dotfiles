@@ -116,7 +116,7 @@ PROMPT="
 local return_color="%(?.%{${fg[cyan]}%}.%{${fg[magenta]}%})"
 
 # 右側のプロンプト
-RPROMPT="${return_color}return:[%?]%{${reset_color}%}"
+RPROMPT="${return_color}[return:%?]%{${reset_color}%}"
 
 
 ########################################
@@ -152,10 +152,10 @@ zstyle ':vcs_info:(svn|hg):*' branchformat '%b:r%r'
 if is-at-least 4.3.10; then
   # git 用のフォーマット
   zstyle ':vcs_info:git:*' check-for-changes true
-  zstyle ':vcs_info:git:*' stagedstr "%F{yellow}="  # %c で表示する文字列
+  zstyle ':vcs_info:git:*' stagedstr "%F{yellow}+"  # %c で表示する文字列
   zstyle ':vcs_info:git:*' unstagedstr "%F{red}!"   # %u で表示する文字列
-  zstyle ':vcs_info:git:*' formats '[%b]' '%c%u%f' '%m'
-  zstyle ':vcs_info:git:*' actionformats '[%b]' '%c%u%f' '%m' '<%a!>'
+  zstyle ':vcs_info:git:*' formats '[%b]' '%c%u' '%m'
+  zstyle ':vcs_info:git:*' actionformats '[%b]' '%c%u' '%m' '<%a!>'
 fi
 
 # hooks 設定
@@ -200,7 +200,7 @@ if is-at-least 4.3.11; then
 
     if [ "$untracked" -gt 0 ]; then
       # unstaged (%u) に追加
-      hook_com[unstaged]+="%F{yellow}?"
+      hook_com[unstaged]+="%F{blue}?"
     fi
   }
 
@@ -293,14 +293,14 @@ function _update_vcs_info_msg() {
     # $vcs_info_msg_0_, $vcs_info_msg_1_, $vcs_info_msg_2_, $vcs_info_msg_3_ を
     # それぞれ緑、色変更なし、黄色、赤で表示する
     [ "$vcs_info_msg_0_" != "" ] && msg="%F{green}${vcs_info_msg_0_}%f"
-    [ "$vcs_info_msg_1_" != "" ] && msg="${msg}${vcs_info_msg_1_}"
+    [ "$vcs_info_msg_1_" != "" ] && msg="${msg%*]}|${vcs_info_msg_1_}%F{green}]%f"
     [ "$vcs_info_msg_2_" != "" ] && msg="${msg} %F{yellow}${vcs_info_msg_2_}%f"
     [ "$vcs_info_msg_3_" != "" ] && msg="${msg} %F{red}${vcs_info_msg_3_}%f"
 
     msg="${msg} "
   fi
 
-  RPROMPT="${msg}${return_color}return:[%?]%{${reset_color}%}"
+  RPROMPT="${msg}${return_color}[return:%?]%{${reset_color}%}"
 }
 
 add-zsh-hook precmd _update_vcs_info_msg
