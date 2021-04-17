@@ -428,7 +428,7 @@ function precmd() {
     local invisible='%([BSUbfksu]|([FK]|){*})'
     local leftwidth=${#${(S%%)left//$~invisible/}}
     local rightwidth=${#${(S%%)right//$~invisible/}}
-    local padwidth=$(($COLUMNS - ($leftwidth + $rightwidth) % $COLUMNS))
+    local padwidth=$(($COLUMNS - ($leftwidth + $rightwidth) % $COLUMNS - 1))
 
     print -P $left${(r:$padwidth:: :)}$right
 
