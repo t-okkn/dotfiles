@@ -93,30 +93,28 @@ zstyle ':completion:*:default' menu select=1
 # UserColor
 # rootは205（ピンク系）、それ以外は045（明るめの青）
 if [ $(id -u) -eq 0 ]; then
-  local p_user=$'%{\e[38;5;205m%}%n%{\e[m%}'
+  local p_user="%F{205}%n%f"
 else
-  local p_user=$'%{\e[38;5;045m%}%n%{\e[m%}'
+  local p_user="%F{045}%n%f"
 fi
 
 # HostNameColor
 case ${SOURCE_SSH_CONNECTION##*,} in
-  0) local p_host=$'%{\e[38;5;015m%}%m%{\e[m%}' ;;
-  1) local p_host=$'%{\e[38;5;156m%}%m%{\e[m%}' ;;
-  2) local p_host=$'%{\e[38;5;220m%}%m%{\e[m%}' ;;
-  3) local p_host=$'%{\e[38;5;218m%}%m%{\e[m%}' ;;
-  *) local p_host=$'%{\e[38;5;218m%}%{\e[48;5;197m%}%m !!TOO MANY CASCADE CONNECTION!!%{\e[m%}' ;;
+  0) local p_host="%F{015}%m%f" ;;
+  1) local p_host="%F{156}%m%f" ;;
+  2) local p_host="%F{220}%m%f" ;;
+  3) local p_host="%F{218}%m%f" ;;
+  *) local p_host="%F{218}%K{197}%m !!TOO MANY CASCADE CONNECTION!!%k%f" ;;
 esac
 
 # 左側のプロンプト
-PROMPT="
-[${p_user}@${p_host}] %{$fg[cyan]%}%~
-%{${reset_color}%}%(!.#.$) "
+PROMPT=$'\n'"[${p_user}@${p_host}] %F{cyan}%~%f"$'\n'"%(!.#.$) "
 
 # 直前に実行したコマンドの戻り値が { 0 -> cyan; 0以外 -> magenta }
-local return_color="%(?.%{${fg[cyan]}%}.%{${fg[magenta]}%})"
+local p_return="%(?.%F{cyan}.%F{magenta})[return:%?]%f"
 
 # 右側のプロンプト
-RPROMPT="${return_color}[return:%?]%{${reset_color}%}"
+RPROMPT="${p_return}"
 
 
 ########################################
@@ -146,14 +144,14 @@ zstyle ':vcs_info:*' enable git svn hg
 # 標準フォーマット（git 以外で使用）
 # misc(%m) は通常は空文字列に置き換えられる
 zstyle ':vcs_info:*' formats '(%s)-[%b]'
-zstyle ':vcs_info:*' actionformats '(%s)-[%b]' '%F{yellow}%c%F{red}%u%f' '%m' '<%a>'
+zstyle ':vcs_info:*' actionformats '(%s)-[%b]' '%F{yellow}%c%F{009}%u%f' '%m' '<%a>'
 zstyle ':vcs_info:(svn|hg):*' branchformat '%b:r%r'
 
 if is-at-least 4.3.10; then
   # git 用のフォーマット
   zstyle ':vcs_info:git:*' check-for-changes true
   zstyle ':vcs_info:git:*' stagedstr "%F{yellow}+"  # %c で表示する文字列
-  zstyle ':vcs_info:git:*' unstagedstr "%F{red}!"   # %u で表示する文字列
+  zstyle ':vcs_info:git:*' unstagedstr "%F{009}!"   # %u で表示する文字列
   zstyle ':vcs_info:git:*' formats '[%b]' '%c%u' '%m'
   zstyle ':vcs_info:git:*' actionformats '[%b]' '%c%u' '%m' '<%a!>'
 fi
@@ -200,7 +198,7 @@ if is-at-least 4.3.11; then
 
     if [ "$untracked" -gt 0 ]; then
       # unstaged (%u) に追加
-      hook_com[unstaged]+="%F{blue}?"
+      hook_com[unstaged]+="%F{012}?"
     fi
   }
 
@@ -292,15 +290,15 @@ function _update_vcs_info_msg() {
     # vcs_info で情報を取得した場合
     # $vcs_info_msg_0_, $vcs_info_msg_1_, $vcs_info_msg_2_, $vcs_info_msg_3_ を
     # それぞれ緑、色変更なし、黄色、赤で表示する
-    [ "$vcs_info_msg_0_" != "" ] && msg="%F{green}${vcs_info_msg_0_}%f"
-    [ "$vcs_info_msg_1_" != "" ] && msg="${msg%*]}|${vcs_info_msg_1_}%F{green}]%f"
+    [ "$vcs_info_msg_0_" != "" ] && msg="%F{010}${vcs_info_msg_0_}%f"
+    [ "$vcs_info_msg_1_" != "" ] && msg="${msg%*]*}|${vcs_info_msg_1_}%F{010}]%f"
     [ "$vcs_info_msg_2_" != "" ] && msg="${msg} %F{yellow}${vcs_info_msg_2_}%f"
-    [ "$vcs_info_msg_3_" != "" ] && msg="${msg} %F{red}${vcs_info_msg_3_}%f"
+    [ "$vcs_info_msg_3_" != "" ] && msg="${msg} %F{009}${vcs_info_msg_3_}%f"
 
     msg="${msg} "
   fi
 
-  RPROMPT="${msg}${return_color}[return:%?]%{${reset_color}%}"
+  RPROMPT="${msg}${p_return}"
 }
 
 add-zsh-hook precmd _update_vcs_info_msg
