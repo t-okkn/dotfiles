@@ -241,6 +241,15 @@ elif [ -f ${DOTEXTRA_PATH}/git-prompt.sh ]; then
   source ${DOTEXTRA_PATH}/git-prompt.sh
 fi
 
+if type __git_ps1 &> /dev/null; then
+  GIT_PS1_SHOWDIRTYSTATE=1
+  GIT_PS1_SHOWUPSTREAM=1
+  GIT_PS1_SHOWUNTRACKEDFILES=1
+  GIT_PS1_SHOWSTASHSTATE=1
+  GIT_PS1_COMPRESSSPARSESTATE=1
+  GIT_PS1_STATESEPARATOR="|"
+fi
+
 function make_ps1 () {
   # 変数の設定
   # chroot環境を示すIDが存在すればプロンプトに表示する
@@ -274,15 +283,8 @@ function make_ps1 () {
   p_return="${p_return} fi)"
 
   # Directory
-  if [ -f /etc/bash_completion.d/git-prompt ] || [ -f ${DOTEXTRA_PATH}/git-prompt.sh ]; then
-    GIT_PS1_SHOWDIRTYSTATE=1
-    GIT_PS1_SHOWUPSTREAM=1
-    GIT_PS1_SHOWUNTRACKEDFILES=1
-    GIT_PS1_SHOWSTASHSTATE=1
-    GIT_PS1_COMPRESSSPARSESTATE=1
-
-    local p_dir="\[\e[36m\]\w [\e[1;32m\][$(__git_ps1)]\[\e[00m\]"
-
+  if type __git_ps1 &> /dev/null; then
+    local p_dir="\[\e[36m\]\w\$(__git_ps1 \"\[\e[01;32m\] [%s]\")\[\e[00m\]"
   else
     local p_dir="\[\e[36m\]\w\[\e[00m\]"
   fi
