@@ -283,7 +283,7 @@ if is-at-least 4.3.11; then
   }
 
   ## stash 件数表示
-  #  stash している場合は :SN という形式で misc (%m) に表示
+  #  stash している場合は :SN という形式で unstaged (%u) に表示
   function +vi-git-stash-count() {
     # zstyle formats, actionformats の2番目のメッセージのみ対象にする
     if [ "$1" != "1" ]; then
