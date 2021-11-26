@@ -267,11 +267,11 @@ function make_ps1 () {
 
   # HostNameColor
   case ${SOURCE_SSH_CONNECTION##*,} in
-    0) local p_host="\[\e[38;5;015m\]\h\[\e[00m\]" ;;
     1) local p_host="\[\e[38;5;156m\]\h\[\e[00m\]" ;;
     2) local p_host="\[\e[38;5;220m\]\h\[\e[00m\]" ;;
     3) local p_host="\[\e[38;5;218m\]\h\[\e[00m\]" ;;
-    *) local p_host="\[\e[38;5;218m\]\[\e[48;5;197m\]\h !!TOO MANY CASCADE CONNECTION!!\[\e[00m\]" ;;
+    [4-9]) local p_host="\[\e[38;5;218m\]\[\e[48;5;197m\]\h !!TOO MANY CASCADE CONNECTION!!\[\e[00m\]" ;;
+    *) local p_host="\[\e[38;5;015m\]\h\[\e[00m\]" ;;
   esac
 
   # 前回実行コマンドの終了ステータスコードの表示
