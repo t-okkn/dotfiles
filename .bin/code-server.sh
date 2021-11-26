@@ -59,8 +59,10 @@ function install_file() {
 }
 
 function update_password() {
-  cat $CONFIG_FILE > $CONFIG_OLD
-  sed -i -e "s/^password:.*$/$PASSWORD/" $CONFIG_FILE
+  if [ -e $CONFIG_FILE ]; then
+    cat $CONFIG_FILE > $CONFIG_OLD
+    sed -i -e "s/^password:.*$/$PASSWORD/" $CONFIG_FILE
+  fi
 }
 
 function send_message() {
