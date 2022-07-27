@@ -57,6 +57,9 @@ fi
 # PATHに[$HOME/.bin]を追加
 [ -d $HOME/.bin ] && PATH=$PATH:$HOME/.bin
 
+# PATHに[$HOME/.cargo/bin]を追加
+[ -d $HOME/.cargo/bin ] && PATH=$PATH:$HOME/.cargo/bin
+
 # GO言語モジュール導入用
 export GO111MODULE=on
 
