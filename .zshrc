@@ -112,12 +112,14 @@ if type dircolors &> /dev/null; then
 fi
 
 # grepの色設定
-export GREP_COLOR="01;31"
+export GREP_COLORS='sl=97;48;5;236:cx=37;40:mt=30;48;5;186:fn=38;5;197:ln=38;5;154:bn=38;5;141:se=38;5;81'
 
 alias grep='grep --color=auto'
-alias egrep='egrep --color=auto'
-alias fgrep='fgrep --color=auto'
+alias egrep='grep --color=auto -E'
+alias fgrep='grep --color=auto -F'
 alias zgrep='zgrep --color=auto'
+alias zegrep='zgrep --color=auto -E'
+alias zfgrep='zgrep --color=auto -F'
 
 # gccの色設定
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
