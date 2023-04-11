@@ -291,7 +291,7 @@ function make_ps1 () {
     local p_dir="\[\e[36m\]\w\[\e[00m\]"
   fi
 
-  echo "\n${chroot_env:+($chroot_env)}[${p_user}@${p_host}]-(${p_return}) ${p_dir}\n\$ "
+  echo "\n${chroot_env:+($chroot_env)}[${p_user}@${p_host}]-(${p_return}) ${p_dir}\n\\$ "
 }
 
 PS1=$(make_ps1)
