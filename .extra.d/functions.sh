@@ -1,5 +1,5 @@
-#!/usr/bin/bash
-##### ~/.functions.sh #####
+#!/bin/sh
+##### ~/.extra.d/functions.sh #####
 
 ########################################
 # My Functions
