@@ -463,8 +463,8 @@ fi
 ########################################
 # Alias設定
 ########################################
-if [ -f ${HOME}/.bash_aliases ]; then
-    source ${HOME}/.bash_aliases
+if [ -f ${DOTEXTRA_PATH}/aliases.sh ]; then
+    source ${DOTEXTRA_PATH}/aliases.sh
 fi
 
 
