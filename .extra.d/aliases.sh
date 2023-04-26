@@ -1,4 +1,4 @@
-##### ~/.bash_aliases #####
+##### ~/.extra.d/aliases.sh #####
 
 ########################################
 # Alias一覧
@@ -27,22 +27,22 @@ alias tl='tmux-list-all'
 ##### ----- zsh ONLY ----- #####
 case "$SHELL" in
   *zsh) # sudoの後のコマンドでエイリアスを有効にする
-        alias sudo='sudo '
-        ##
-        # global alias
-        alias -g A='| awk'
-        alias -g H='| head'
-        alias -g L='| less'
-        alias -g G='| grep'
-        alias -g T='| tail'
-        alias -g X='| xargs'
-        ##
-        # suffix alias
-        # 解凍系（./hoge.tar.gz で展開できる）
-        alias -s gz='tar -xzvf'
-        alias -s bz2='tar -jxvf'
-        alias -s xz='tar -Jxvf'
-        alias -s tar='tar -xvf'
-        alias -s zip='unar'
-        ;;
+    alias sudo='sudo '
+    ##
+    # global alias
+    alias -g A='| awk'
+    alias -g H='| head'
+    alias -g L='| less'
+    alias -g G='| grep'
+    alias -g T='| tail'
+    alias -g X='| xargs'
+    ##
+    # suffix alias
+    # 解凍系（./hoge.tar.gz で展開できる）
+    alias -s gz='tar -xzvf'
+    alias -s bz2='tar -jxvf'
+    alias -s xz='tar -Jxvf'
+    alias -s tar='tar -xvf'
+    alias -s zip='unar'
+    ;;
 esac
