@@ -60,6 +60,9 @@ fi
 # PATHに[$HOME/.cargo/bin]を追加
 [ -d $HOME/.cargo/bin ] && PATH=$PATH:$HOME/.cargo/bin
 
+# PATHに[$HOME/.pyenv/bin]を追加
+[ -d $HOME/.pyenv/bin ] && PATH=$PATH:$HOME/.pyenv/bin && eval "$(pyenv init -)"
+
 # GO言語モジュール導入用
 export GO111MODULE=on
 
