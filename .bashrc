@@ -239,8 +239,8 @@ export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quo
 # git-prompt の読み込み
 if [ -f /etc/bash_completion.d/git-prompt ]; then
   source /etc/bash_completion.d/git-prompt
-elif [ -f ${DOTEXTRA_PATH}/git-prompt.sh ]; then
-  source ${DOTEXTRA_PATH}/git-prompt.sh
+elif [ -f ${DOTEXTRA}/git-prompt.sh ]; then
+  source ${DOTEXTRA}/git-prompt.sh
 fi
 
 if type __git_ps1 &> /dev/null; then
@@ -300,16 +300,16 @@ PS1=$(make_ps1)
 ########################################
 # Alias設定
 ########################################
-if [ -f ${DOTEXTRA_PATH}/aliases.sh ]; then
-    source ${DOTEXTRA_PATH}/aliases.sh
+if [ -f ${DOTEXTRA}/aliases.sh ]; then
+    source ${DOTEXTRA}/aliases.sh
 fi
 
 
 ########################################
 # 関数設定
 ########################################
-if [ -f ${DOTEXTRA_PATH}/functions.sh ]; then
-    source ${DOTEXTRA_PATH}/functions.sh
+if [ -f ${DOTEXTRA}/functions.sh ]; then
+    source ${DOTEXTRA}/functions.sh
 fi
 
 

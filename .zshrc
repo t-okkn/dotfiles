@@ -463,16 +463,16 @@ fi
 ########################################
 # Alias設定
 ########################################
-if [ -f ${DOTEXTRA_PATH}/aliases.sh ]; then
-    source ${DOTEXTRA_PATH}/aliases.sh
+if [ -f ${DOTEXTRA}/aliases.sh ]; then
+    source ${DOTEXTRA}/aliases.sh
 fi
 
 
 ########################################
 # 関数設定
 ########################################
-if [ -f ${DOTEXTRA_PATH}/functions.sh ]; then
-    source ${DOTEXTRA_PATH}/functions.sh
+if [ -f ${DOTEXTRA}/functions.sh ]; then
+    source ${DOTEXTRA}/functions.sh
 fi
 
 

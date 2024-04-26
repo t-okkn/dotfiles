@@ -45,8 +45,8 @@ fi
 export SOURCE_SSH_CONNECTION
 
 # dotfiles関連の環境変数
-export DOTPATH=$HOME/.dotfiles
-[ -d $HOME/.extra.d ] && export DOTEXTRA_PATH=$HOME/.extra.d
+export DOTFILES=$HOME/.dotfiles
+[ -d $HOME/.extra.d ] && export DOTEXTRA=$HOME/.extra.d
 
 # Bashが動作していれば、[.bashrc]を読み込み
 if [ "$BASH_VERSION" != "" ]; then
