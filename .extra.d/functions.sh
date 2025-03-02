@@ -68,7 +68,7 @@ function kill-session () {
 
 # png2jpg [resize] => Convert from png format to jpg format
 function png2jpg () {
-  if type mogrify >& /dev/null; then
+  if type magick >& /dev/null; then
     local resize="100%"
 
     if [ ! $1 = "" ]; then
@@ -84,13 +84,13 @@ function png2jpg () {
 
 # img2pdf => 画像ファイルの入ったフォルダ群を画像pdfファイルに変換する
 function img2pdf () {
-  if type convert >& /dev/null && type exiftool >& /dev/null; then
+  if type magick >& /dev/null && type exiftool >& /dev/null; then
 
     find ./ -mindepth 1 -maxdepth 1 -type d -print | while read i; do
       e=$(\ls -1 --color=none $i/ | head -n 1 | sed -r 's/^.*\.//')
 
       if [ -z "$(\ls -1 --color=none $i/ | grep -v \.$e)" ]; then
-        convert $i/*.$e ${i##*/}.pdf \
+        magick $i/*.$e ${i##*/}.pdf \
           && exiftool -title="${i##*/}" ${i##*/}.pdf > /dev/null \
           && echo "${i##*/} -> Success"
 
